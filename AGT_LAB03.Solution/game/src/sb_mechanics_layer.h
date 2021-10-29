@@ -16,6 +16,9 @@ private:
 
 	engine::ref<engine::skybox>			m_skybox{};
 	engine::ref<engine::game_object>	m_terrain{};
+	engine::ref<engine::game_object>	m_tree{};
+	engine::ref<engine::game_object>	m_crab{};
+
 	engine::ref<engine::game_object> m_letter{};
 
 	std::vector<engine::ref<engine::game_object>> m_menuitems{}; 

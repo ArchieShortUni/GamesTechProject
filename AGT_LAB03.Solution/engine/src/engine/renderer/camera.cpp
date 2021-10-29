@@ -230,10 +230,10 @@ void engine::perspective_camera::update_view_matrix()
 
     // inverting the transform matrix  
     //m_view_mat = glm::inverse(transform);
-    //m_view_mat = glm::lookAt(glm::vec3(0.f, 20.f, 0.f), glm::vec3(0.1f, 0.f, 0.f), glm::vec3(1.f, 0.0f, 0.f));
-
+    m_view_mat = glm::lookAt(glm::vec3(0.f, 20.f, 0.f), glm::vec3(0.1f, 0.f, 0.f), glm::vec3(1.f, 0.0f, 0.f));
+    
     //MAKE AN SELECTOR BASED ON WHAT IS NEEDED
-    m_view_mat = glm::lookAt(m_position, m_position + m_front_vector, m_up_vector);
+   // m_view_mat = glm::lookAt(m_position, m_position + m_front_vector, m_up_vector);
    //
    //
    // 
