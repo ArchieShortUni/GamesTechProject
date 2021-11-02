@@ -115,6 +115,27 @@ void engine::perspective_camera::on_update(const timestep& timestep)
     else if (engine::input::key_pressed(engine::key_codes::KEY_W)) // up 
         move(e_direction::forward, timestep);
 
+    //HANDLE FPS STUFF HERE
+    if (m_position.y > standing_height) { m_position.y = standing_height; }
+    else if (m_position.y < crouching_height) { m_position.y = crouching_height; }
+
+
+    if (!crouched) {
+        if (m_position.y < standing_height) {
+            m_position.y += crouch_step * timestep; 
+        }
+    }
+    else {
+        if (m_position.y > crouching_height) {
+            m_position.y -= crouch_step * timestep; 
+        }
+
+    }
+
+  //  m_rotation_angle += glm::vec3(1.0f, 0.0f, 0.0f);
+    
+    rotate(clock_wise, y, timestep);
+
 
     //float delta = input::mouse_scroll(); 
     //process_mouse_scroll(delta); 
@@ -230,10 +251,10 @@ void engine::perspective_camera::update_view_matrix()
 
     // inverting the transform matrix  
     //m_view_mat = glm::inverse(transform);
-    m_view_mat = glm::lookAt(glm::vec3(0.f, 20.f, 0.f), glm::vec3(0.1f, 0.f, 0.f), glm::vec3(1.f, 0.0f, 0.f));
+   // m_view_mat = glm::lookAt(glm::vec3(0.f, 20.f, 0.f), glm::vec3(0.1f, 0.f, 0.f), glm::vec3(1.f, 0.0f, 0.f));
     
     //MAKE AN SELECTOR BASED ON WHAT IS NEEDED
-   // m_view_mat = glm::lookAt(m_position, m_position + m_front_vector, m_up_vector);
+    m_view_mat = glm::lookAt(m_position, m_position + m_front_vector, m_up_vector);
    //
    //
    // 

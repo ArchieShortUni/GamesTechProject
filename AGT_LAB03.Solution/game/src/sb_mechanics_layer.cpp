@@ -89,15 +89,16 @@ m_3d_camera((float)engine::application::window().width(), (float)engine::applica
 		engine::game_object_properties letter_props;
 		letter_props.meshes = letter_model->meshes();
 		letter_props.textures = letter_model->textures();
-		float tree_scale = 3.f / glm::max(letter_model->size().x, glm::max(letter_model->size().y, letter_model->size().z));
+		float letter_scale = 3.f / glm::max(letter_model->size().x, glm::max(letter_model->size().y, letter_model->size().z));
 		letter_props.position = { 3.0f, 2.0f, 3.5f };
-		letter_props.bounding_shape = letter_model->size() / 2.f * tree_scale;
+		letter_props.bounding_shape = letter_model->size() / 2.f * letter_scale;
+		letter_props.bounding_shape /= 4;
 		letter_props.rotation_amount = AI_DEG_TO_RAD(270);
-		letter_props.scale = glm::vec3(tree_scale);
+		letter_props.scale = glm::vec3(letter_scale);
 
 		m_letter = engine::game_object::create(letter_props);
 		m_menuitems.emplace_back(m_letter);
-		//m_game_objects.emplace_back(m_letter); 
+		m_game_objects.emplace_back(m_letter); 
 	}
 
 	engine::ref<engine::model> crab_model = engine::model::create("assets/models/static/Menu/m-2-crab.obj");
@@ -112,21 +113,6 @@ m_3d_camera((float)engine::application::window().width(), (float)engine::applica
 	crab_props.scale = glm::vec3(crab_scale);
 
 	m_crab = engine::game_object::create(crab_props);
-
-
-
-
-	
-
-
-
-
-
-
-
-
-
-
 
 	m_game_objects.push_back(m_terrain);
 	m_game_objects.push_back(m_tree);
@@ -208,6 +194,15 @@ void sb_mechanics_layer::on_event(engine::event& event)
 		if (e.key_code() == engine::key_codes::KEY_TAB)
 		{
 			engine::render_command::toggle_wireframe();
+		}
+		if (e.key_code() == engine::key_codes::KEY_C) {
+			m_3d_camera.start_crouch();
+		}
+	}
+	if (event.event_type() == engine::event_type_e::key_released) {
+		auto& e = dynamic_cast<engine::key_released_event&>(event);
+		if (e.key_code() == engine::key_codes::KEY_C) {
+			m_3d_camera.end_crouch(); 
 		}
 	}
 }

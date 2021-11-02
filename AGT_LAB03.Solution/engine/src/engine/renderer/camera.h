@@ -1,5 +1,6 @@
 #pragma once
 #include "engine/core/timestep.h"
+
 #define GLM_FORCE_CTOR_INIT
 #include "glm/glm.hpp"
 
@@ -120,6 +121,19 @@ namespace engine
             float width, float height,  
             float fov = 45.f,  
             float near_z = 0.1f, float far_z = 100.f);
+        //Height things
+        bool crouched = false; 
+        float crouch_step = 2.0f;
+        float standing_height = 1.5f;
+        float crouching_height = 1.0f;
+
+        void start_crouch() { crouched = true; }
+        void end_crouch() { crouched = false; }
+
+        //Leaning
+        //float max_lean_angle = ai_deg_to_rad(15);
+        //float lean_step = ai_deg_to_rad(10); 
+        
 
         void on_update(const timestep& timestep) override;
         void update_rail(const timestep& ts);
