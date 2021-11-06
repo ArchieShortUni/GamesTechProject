@@ -114,6 +114,20 @@ m_3d_camera((float)engine::application::window().width(), (float)engine::applica
 
 	m_crab = engine::game_object::create(crab_props);
 
+	engine::ref<engine::model> shell_model = engine::model::create("assets/models/static/shell.obj");
+	engine::game_object_properties shell_props;
+
+	shell_props.meshes = shell_model->meshes();
+	shell_props.textures = shell_model->textures();
+	float shell_scale = 3.f / glm::max(shell_model->size().x, glm::max(shell_model->size().y, shell_model->size().z));
+	shell_scale /= 5;
+	shell_props.position = { 0,-10,0 };
+	shell_props.bounding_shape = shell_model->size() / 2.f * shell_scale;
+	shell_props.rotation_amount = AI_DEG_TO_RAD(270);
+	shell_props.scale = glm::vec3(shell_scale);
+
+	m_shell = engine::game_object::create(shell_props);
+
 	m_game_objects.push_back(m_terrain);
 	m_game_objects.push_back(m_tree);
 	//m_game_objects.push_back(m_crab); 
@@ -125,6 +139,15 @@ m_3d_camera((float)engine::application::window().width(), (float)engine::applica
 
 sb_mechanics_layer::~sb_mechanics_layer() {}
 
+void sb_mechanics_layer::place_shell_camera() {
+	glm::vec3 pos = m_3d_camera.position();
+	glm::vec3 shell_pos = glm::vec3(pos.x, 0.5f, pos.z);
+	m_shell->set_position(shell_pos);
+
+	glm::vec3 new_camera_position = glm::vec3(pos.x, 20.0f, pos.z);
+	m_3d_camera.update_shell_position(new_camera_position);
+
+}
 void sb_mechanics_layer::on_update(const engine::timestep& time_step) {
 	m_3d_camera.on_update(time_step);
 
@@ -175,7 +198,11 @@ void sb_mechanics_layer::on_render() {
 	crab_transform = glm::scale(crab_transform, m_crab->scale());
 	engine::renderer::submit(mesh_shader, crab_transform, m_crab);
 
-
+	glm::mat4 shell_transform(1.0f);
+	shell_transform = glm::translate(shell_transform, m_shell->position());
+	shell_transform = glm::rotate(shell_transform, m_shell->rotation_amount(), m_shell->rotation_axis());
+	shell_transform = glm::scale(shell_transform, m_shell->scale());
+	engine::renderer::submit(mesh_shader, shell_transform, m_shell);
 	engine::renderer::end_scene();
 
 	const auto text_shader = engine::renderer::shaders_library()->get("text_2D");
@@ -197,6 +224,13 @@ void sb_mechanics_layer::on_event(engine::event& event)
 		}
 		if (e.key_code() == engine::key_codes::KEY_C) {
 			m_3d_camera.start_crouch();
+		}
+		if (e.key_code() == engine::key_codes::KEY_G) {
+			m_3d_camera.swap_view();
+	
+		}
+		if (e.key_code() == engine::key_codes::KEY_F) {
+			place_shell_camera();
 		}
 	}
 	if (event.event_type() == engine::event_type_e::key_released) {

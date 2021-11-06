@@ -11,6 +11,8 @@ public:
 	void on_render() override;
 	void on_event(engine::event& event) override;
 
+	void place_shell_camera();
+
 
 private:
 
@@ -18,6 +20,7 @@ private:
 	engine::ref<engine::game_object>	m_terrain{};
 	engine::ref<engine::game_object>	m_tree{};
 	engine::ref<engine::game_object>	m_crab{};
+	engine::ref<engine::game_object>	m_shell{};
 
 	engine::ref<engine::game_object> m_letter{};
 

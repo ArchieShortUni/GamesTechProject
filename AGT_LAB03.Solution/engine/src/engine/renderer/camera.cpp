@@ -251,10 +251,14 @@ void engine::perspective_camera::update_view_matrix()
 
     // inverting the transform matrix  
     //m_view_mat = glm::inverse(transform);
-   // m_view_mat = glm::lookAt(glm::vec3(0.f, 20.f, 0.f), glm::vec3(0.1f, 0.f, 0.f), glm::vec3(1.f, 0.0f, 0.f));
+    if (!first_person_view) {
+        m_view_mat = glm::lookAt(shell_position, shell_position + (glm::vec3(0.1f, 0.f, 0.f)-glm::vec3(0.f,20.f,0.f)), glm::vec3(1.f, 0.f, 0.f));
+    }
+    else {
+        m_view_mat = glm::lookAt(m_position, m_position + m_front_vector, m_up_vector);
+    }
     
     //MAKE AN SELECTOR BASED ON WHAT IS NEEDED
-    m_view_mat = glm::lookAt(m_position, m_position + m_front_vector, m_up_vector);
    //
    //
    // 
@@ -268,6 +272,11 @@ void engine::perspective_camera::set_view_matrix(glm::vec3 position, glm::vec3 l
 	m_front_vector = glm::normalize(look_at - position);
 	m_view_mat = glm::lookAt(m_position, m_position + m_front_vector, m_up_vector);
 	m_view_projection_mat = m_projection_mat * m_view_mat;
+}
+
+void engine::perspective_camera::swap_view() {
+    if (first_person_view) { first_person_view = false; }
+    else if (!first_person_view) { first_person_view = true; }
 }
 
 void engine::perspective_camera::update_camera_vectors()

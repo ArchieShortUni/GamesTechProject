@@ -135,6 +135,12 @@ namespace engine
         //float lean_step = ai_deg_to_rad(10); 
         
 
+        //Swap camera
+        bool first_person_view = false;
+        glm::vec3 shell_position = glm::vec3(0.f, 20.f, 0.f);
+        void update_shell_position(glm::vec3 pos) { shell_position = pos; }
+        void swap_view();
+
         void on_update(const timestep& timestep) override;
         void update_rail(const timestep& ts);
 
