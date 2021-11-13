@@ -177,18 +177,19 @@ void engine::perspective_camera::process_mouse(float mouse_delta_x, float mouse_
 }
 
 void engine::perspective_camera::move(e_direction direction, timestep ts) 
-{ 
-    if(direction == forward) 
-        m_position += s_movement_speed * ts * m_front_vector; 
+{
+    if(direction == forward)
+
+        m_position += s_movement_speed * ts * glm::vec3(m_front_vector.x, 0,m_front_vector.z);
     else if(direction == backward) 
-        m_position -= s_movement_speed * ts * m_front_vector; 
+        m_position -= s_movement_speed * ts * glm::vec3(m_front_vector.x, 0, m_front_vector.z);
 
     if(direction == left) 
-        m_position -= s_movement_speed * ts * m_right_vector;
+        m_position -= s_movement_speed * ts * glm::vec3(m_right_vector.x, 0, m_right_vector.z);
     else if(direction == right) 
-        m_position += s_movement_speed * ts * m_right_vector;
+        m_position += s_movement_speed * ts * glm::vec3(m_right_vector.x, 0, m_right_vector.z);
 
-    //LOG_CORE_TRACE("3d cam position: [{},{},{}]", m_position.x, m_position.y, m_position.z); 
+    //LOG_CORE_TRACE("3d cam position: [{},{},{}]", m_position.x, m_position.y, m_position.z);
 }
 
 void engine::perspective_camera::move_rail(e_direction direction, timestep ts)

@@ -12,7 +12,7 @@ engine::tetrahedron::tetrahedron(std::vector<glm::vec3> vertices) : m_vertices(v
 	// right normal
 	normals.push_back(glm::cross(vertices.at(0) - vertices.at(1), vertices.at(0) - vertices.at(3)));
 	// bottom normal
-	normals.push_back(glm::cross(vertices.at(1) - vertices.at(2), vertices.at(1) - vertices.at(3)));
+	//normals.push_back(glm::cross(vertices.at(1) - vertices.at(2), vertices.at(1) - vertices.at(3)));
 
 	std::vector<mesh::vertex> tetrahedron_vertices
 	{
@@ -33,9 +33,9 @@ engine::tetrahedron::tetrahedron(std::vector<glm::vec3> vertices) : m_vertices(v
 		{ vertices.at(1),		normals.at(2),		{ 0.5f, 1.f } },
 
 		//bottom
-		{ vertices.at(3),		normals.at(3),		{ 0.f,  0.f } },
-		{ vertices.at(1),		normals.at(3),		{ 1.f,  0.f } },
-		{ vertices.at(2),		normals.at(3),		{ 0.5f, 1.f } },
+		//{ vertices.at(3),		normals.at(3),		{ 0.f,  0.f } },
+		//{ vertices.at(1),		normals.at(3),		{ 1.f,  0.f } },
+	//	{ vertices.at(2),		normals.at(3),		{ 0.5f, 1.f } },
 	
 	};
 
@@ -44,7 +44,7 @@ engine::tetrahedron::tetrahedron(std::vector<glm::vec3> vertices) : m_vertices(v
 		0,  1,  2,	//front
 		3,  4,  5,	//left
 		6,	7,	8,	//Right
-		9,	10,	11	//Bottom
+//		9,	10,	11	//Bottom
 	};
 
 	m_mesh = engine::mesh::create(tetrahedron_vertices, tetrahedron_indices);

@@ -129,6 +129,7 @@ namespace engine
 
         void start_crouch() { crouched = true; }
         void end_crouch() { crouched = false; }
+        bool is_crouch() { return crouched; }
 
         //Leaning
         //float max_lean_angle = ai_deg_to_rad(15);

@@ -49,16 +49,25 @@ m_3d_camera((float)engine::application::window().width(), (float)engine::applica
 	//INITIALISE HERE 
 	// Load the terrain texture and create a terrain mesh. Create a terrain object. Set its properties
 
+	m_tricube_material = engine::material::create(32.0f,
+		glm::vec3(1.0f, 0.5f, 0.0f),
+		glm::vec3(1.0f, 0.5f, 0.0f),
+		glm::vec3(0.5f, 0.5f, 0.5f),
+		0.3f);
+
+
+
 	m_skybox = engine::skybox::create(50.f,
-		{ engine::texture_2d::create("assets/textures/SkyboxNight/lf.bmp", true),
-		  engine::texture_2d::create("assets/textures/SkyboxNight/bk.bmp", true),
-		  engine::texture_2d::create("assets/textures/SkyboxNight/rt.bmp", true),
-		  engine::texture_2d::create("assets/textures/SkyboxNight/ft.bmp", true),
-		  engine::texture_2d::create("assets/textures/SkyboxNight/up.bmp", true),
-		  engine::texture_2d::create("assets/textures/SkyboxNight/dn.bmp", true)
+		{ engine::texture_2d::create("assets/textures/skyboxBeach/lost_at_sealf.bmp", true),
+		  engine::texture_2d::create("assets/textures/skyboxBeach/lost_at_seabk.bmp", true),
+		  engine::texture_2d::create("assets/textures/skyboxBeach/lost_at_seart.bmp", true),
+		  engine::texture_2d::create("assets/textures/skyboxBeach/lost_at_seaft.bmp", true),
+		  engine::texture_2d::create("assets/textures/skyboxBeach/lost_at_seaup.bmp", true),
+		  engine::texture_2d::create("assets/textures/skyboxBeach/lost_at_seadn.bmp", true)
 		});
 
-	std::vector<engine::ref<engine::texture_2d>> terrain_textures = { engine::texture_2d::create("assets/textures/terrain.bmp", false) };
+	std::vector<engine::ref<engine::texture_2d>> terrain_textures = { engine::texture_2d::create("assets/textures/ocean_terrain.bmp", false) };
+	std::vector<engine::ref<engine::texture_2d>> menu_textures = { engine::texture_2d::create("assets/textures/menu.bmp", false) };
 	engine::ref<engine::terrain> terrain_shape = engine::terrain::create(100.f, 0.5f, 100.f);
 	engine::game_object_properties terrain_props;
 	terrain_props.meshes = { terrain_shape->mesh() };
@@ -68,6 +77,9 @@ m_3d_camera((float)engine::application::window().width(), (float)engine::applica
 	terrain_props.bounding_shape = glm::vec3(100.f, 0.5f, 100.f);
 	terrain_props.restitution = 0.92f;
 	m_terrain = engine::game_object::create(terrain_props);
+
+	terrain_props.textures = menu_textures;
+	m_menu_background = engine::game_object::create(terrain_props);
 
 	engine::ref <engine::model> tree_model = engine::model::create("assets/models/static/elm.3ds");
 	engine::game_object_properties tree_props;
@@ -79,54 +91,68 @@ m_3d_camera((float)engine::application::window().width(), (float)engine::applica
 	tree_props.scale = glm::vec3(tree_scale);
 	m_tree = engine::game_object::create(tree_props);
 
-	//TextForMenu
-	std::vector<std::string> letterstoprow = { "m-10-C.obj","m-9-O.obj","m-8-V.obj","m-7-E.obj","m-6-R.obj","m-5-T.obj","m-0-C2.obj","m-1-R2.obj","m-4-A.obj","m-3-B.obj" };
 
-	for (int i = 0; i < letterstoprow.size(); i++) {
-		std::string path = "assets/models/static/Menu/" + letterstoprow.at(i);
 
-		engine::ref<engine::model> letter_model = engine::model::create(path);
-		engine::game_object_properties letter_props;
-		letter_props.meshes = letter_model->meshes();
-		letter_props.textures = letter_model->textures();
-		float letter_scale = 3.f / glm::max(letter_model->size().x, glm::max(letter_model->size().y, letter_model->size().z));
-		letter_props.position = { 3.0f, 2.0f, 3.5f };
-		letter_props.bounding_shape = letter_model->size() / 2.f * letter_scale;
-		letter_props.bounding_shape /= 4;
-		letter_props.rotation_amount = AI_DEG_TO_RAD(270);
-		letter_props.scale = glm::vec3(letter_scale);
 
-		m_letter = engine::game_object::create(letter_props);
-		m_menuitems.emplace_back(m_letter);
-		m_game_objects.emplace_back(m_letter); 
+
+	engine::ref<engine::model> claw_model = engine::model::create("assets/models/static/claw.obj");
+	engine::game_object_properties claw_props;
+
+	claw_props.meshes = claw_model->meshes();
+	claw_props.textures = claw_model->textures();
+	float claw_scale = 3.f / glm::max(claw_model->size().x, glm::max(claw_model->size().y, claw_model->size().z));
+	claw_scale /= 5;
+	claw_props.scale = glm::vec3(claw_scale);
+
+	m_claw = engine::game_object::create(claw_props);
+
+
+	//PRIMITIVE OBJECT
+	std::vector<glm::vec3> tricube_vertices;
+	//Rectange Vertices
+	tricube_vertices.push_back(glm::vec3(-5.f, 0.f, 5.f)); //0
+	tricube_vertices.push_back(glm::vec3(5.f, 0.f, 5.f)); //1
+	tricube_vertices.push_back(glm::vec3(5.f, 0.f, -5.f)); //2
+	tricube_vertices.push_back(glm::vec3(-5.f, 0.f, -5.f)); //3
+	tricube_vertices.push_back(glm::vec3(-5.f, 2.f, 5.f)); //4
+	tricube_vertices.push_back(glm::vec3(5.f, 2.f, 5.f)); //5
+	tricube_vertices.push_back(glm::vec3(5.f, 2.f, -5.f)); //6
+	tricube_vertices.push_back(glm::vec3(-5.f, 2.f, -5.f)); //7
+	//Triangle Tip
+	tricube_vertices.push_back(glm::vec3(0.f, 15.f, 0.f)); //8
+	//Base vertices
+	tricube_vertices.push_back(glm::vec3(-1.f, 0.f, 1.f)); //9
+	tricube_vertices.push_back(glm::vec3(1.f, 0.f, 1.f)); //10
+	tricube_vertices.push_back(glm::vec3(1.f, 0.f, -1.f)); //11
+	tricube_vertices.push_back(glm::vec3(-1.f, 0.f, -1.f)); //12
+	tricube_vertices.push_back(glm::vec3(-1.f, -8.f, 1.f)); //13
+	tricube_vertices.push_back(glm::vec3(1.f, -8.f, 1.f)); //14
+	tricube_vertices.push_back(glm::vec3(1.f, -8.f, -1.f)); //15
+	tricube_vertices.push_back(glm::vec3(-1.f, -8.f, -1.f)); //16
+
+	std::vector<engine::ref<engine::texture_2d>> tricube_texture = {
+		engine::texture_2d::create("assets/textures/primitive_texture_pixel.bmp",false)
+	};
+
+	engine::ref<engine::tricube> tricube_shape = engine::tricube::create(tricube_vertices);
+	engine::game_object_properties tricube_props;
+	tricube_props.position = { 3.f, .9f, 20.f };
+	tricube_props.meshes = { tricube_shape->mesh() };
+	tricube_props.textures = tricube_texture;
+	tricube_props.scale /= 25;
+	m_tricube = engine::game_object::create(tricube_props);
+
+	//energy trap testing 
+	tricube_props.position = { 3.f, .9f, 10.f };
+	m_tricube2 = engine::game_object::create(tricube_props);
+
+	glm::vec3 dir = glm::vec3(3.f, 0.9f, 10.f) - glm::vec3(3.f, .9f, 20.f);
+	//glm::vec3 dir =  glm::vec3(3.f, .9f, 20.f)- glm::vec3(3.f, 0.9f, 10.f);
+
+	for (uint32_t i = 0; i < 3; i++) {
+		m_energy_bolts.push_back(energy_trap_rays::create(glm::vec3(3.f, .9f, 20.f), dir));
 	}
 
-	engine::ref<engine::model> crab_model = engine::model::create("assets/models/static/Menu/m-2-crab.obj");
-	engine::game_object_properties crab_props;
-	crab_props.meshes = crab_model->meshes();
-	crab_props.textures = crab_model->textures();
-	float crab_scale = 3.f / glm::max(crab_model->size().x, glm::max(crab_model->size().y, crab_model->size().z));
-	crab_scale *= 2.5;
-	crab_props.position = {- 2.0f,2.0f,-17.0f };
-	crab_props.bounding_shape = crab_model->size() / 2.f * crab_scale;
-	crab_props.rotation_amount = AI_DEG_TO_RAD(270);
-	crab_props.scale = glm::vec3(crab_scale);
-
-	m_crab = engine::game_object::create(crab_props);
-
-	engine::ref<engine::model> shell_model = engine::model::create("assets/models/static/shell.obj");
-	engine::game_object_properties shell_props;
-
-	shell_props.meshes = shell_model->meshes();
-	shell_props.textures = shell_model->textures();
-	float shell_scale = 3.f / glm::max(shell_model->size().x, glm::max(shell_model->size().y, shell_model->size().z));
-	shell_scale /= 5;
-	shell_props.position = { 0,-10,0 };
-	shell_props.bounding_shape = shell_model->size() / 2.f * shell_scale;
-	shell_props.rotation_amount = AI_DEG_TO_RAD(270);
-	shell_props.scale = glm::vec3(shell_scale);
-
-	m_shell = engine::game_object::create(shell_props);
 
 	m_game_objects.push_back(m_terrain);
 	m_game_objects.push_back(m_tree);
@@ -135,24 +161,50 @@ m_3d_camera((float)engine::application::window().width(), (float)engine::applica
 	m_physics_manager = engine::bullet_manager::create(m_game_objects);
 
 	m_text_manager = engine::text_manager::create();
+
+	m_shell_camera = shell_camera::create(1.6f, 0.9f);
+
+	m_menu_handler = menu_handler::create(1.6f, 0.9f);
 }
 
 sb_mechanics_layer::~sb_mechanics_layer() {}
 
 void sb_mechanics_layer::place_shell_camera() {
-	glm::vec3 pos = m_3d_camera.position();
-	glm::vec3 shell_pos = glm::vec3(pos.x, 0.5f, pos.z);
-	m_shell->set_position(shell_pos);
 
+	//Get camera position
+	glm::vec3 pos = m_3d_camera.position();
+	//Check if the player is crouched or not and set the placement height accordingly
+	if (m_3d_camera.is_crouch()) {float place_height = pos.y - 0.8f;}
+	else { float place_height = pos.y - 1.3f; }
+	//Create a vector for the shell placement position
+	glm::vec3 shell_pos = glm::vec3(pos.x, 0.5f, pos.z);
+	m_shell_camera->add_shell(shell_pos);
+	//Create a vector to look down on the shell and set it to the most recent shell position
 	glm::vec3 new_camera_position = glm::vec3(pos.x, 20.0f, pos.z);
 	m_3d_camera.update_shell_position(new_camera_position);
 
 }
+
+void sb_mechanics_layer::cycle_shell(int direction) {
+	if (m_shell_camera->get_current_shell() == -1)
+		return;
+	glm::vec3 pos = m_shell_camera->cycle_pos(direction);
+	glm::vec3 new_camera_position = glm::vec3(pos.x, 20.0f, pos.z);
+
+	m_3d_camera.update_shell_position(new_camera_position);
+}
+
+
+
+
 void sb_mechanics_layer::on_update(const engine::timestep& time_step) {
 	m_3d_camera.on_update(time_step);
 
 	m_physics_manager->dynamics_world_update(m_game_objects, double(time_step));
 
+	for (uint32_t i = 0; i < m_energy_bolts.size(); i++) {
+		m_energy_bolts.at(i)->on_update(time_step);
+	}
 }
 
 void sb_mechanics_layer::on_render() {
@@ -173,18 +225,11 @@ void sb_mechanics_layer::on_render() {
 	}
 	engine::renderer::submit(mesh_shader, m_skybox, skybox_tranform);
 
+	if(on_menu){engine::renderer::submit(mesh_shader, m_menu_background);}
+	else {engine::renderer::submit(mesh_shader, m_terrain);}
 
-	engine::renderer::submit(mesh_shader, m_terrain);
 
-	for (int i = 0; i < m_menuitems.size(); i++) {
-		glm::mat4 letter_transform(1.0f);
-		letter_transform = glm::translate(letter_transform, m_menuitems.at(i)->position());
-		letter_transform = glm::translate(letter_transform, -m_menuitems.at(i)->offset() * m_menuitems.at(i)->scale());
-		letter_transform = glm::rotate(letter_transform, m_menuitems.at(i)->rotation_amount(), m_menuitems.at(i)->rotation_axis());
-		letter_transform = glm::scale(letter_transform, m_menuitems.at(i)->scale());
 
-		engine::renderer::submit(mesh_shader, letter_transform, m_menuitems.at(i));
-	}
 
 	glm::mat4 tree_transform(1.0f);
 	tree_transform = glm::translate(tree_transform, m_tree->position());
@@ -192,24 +237,52 @@ void sb_mechanics_layer::on_render() {
 	tree_transform = glm::scale(tree_transform, m_tree->scale());
 	engine::renderer::submit(mesh_shader, tree_transform, m_tree);
 
-	glm::mat4 crab_transform(1.0f);
-	crab_transform = glm::translate(crab_transform, m_crab->position());
-	crab_transform = glm::rotate(crab_transform, m_crab->rotation_amount(), m_crab->rotation_axis());
-	crab_transform = glm::scale(crab_transform, m_crab->scale());
-	engine::renderer::submit(mesh_shader, crab_transform, m_crab);
+	
 
-	glm::mat4 shell_transform(1.0f);
-	shell_transform = glm::translate(shell_transform, m_shell->position());
-	shell_transform = glm::rotate(shell_transform, m_shell->rotation_amount(), m_shell->rotation_axis());
-	shell_transform = glm::scale(shell_transform, m_shell->scale());
-	engine::renderer::submit(mesh_shader, shell_transform, m_shell);
+	//FPS CLAW
+    glm::vec3 pos = m_3d_camera.position();
+	glm::vec3 forward = m_3d_camera.front_vector();
+	glm::vec3 right = m_3d_camera.right_vector();
+
+	float theta = engine::PI / 2.0f - acos(forward.y);
+	float phi = atan2(forward.x, forward.z);
+
+	glm::vec3 p = pos + 0.5f * forward + 0.2f * right;
+	//glm::vec3 p = glm::vec3(2, 2, 2);
+	glm::mat4 claw_transform(1.0f);
+	glm::translate(claw_transform, p);
+	//glm::rotate(claw_transform, phi, glm::vec3(0.f, 1.f, 0.f));
+	//glm::rotate(claw_transform, -theta, glm::vec3(1.f, 0.f, 0.f));
+	//glm::scale(claw_transform, glm::vec3(0.25, 0.25, 0.25));
+	//engine::renderer::submit(mesh_shader, claw_transform, m_claw);
+
+	m_shell_camera->on_render3d(mesh_shader);
+	m_menu_handler->on_render3d(mesh_shader);
+	//m_material->submit(mesh_shader);
+	engine::renderer::submit(mesh_shader, m_tricube);
+	engine::renderer::submit(mesh_shader, m_tricube2);
+
+	for (uint32_t i = 0; i < m_energy_bolts.size(); i++) {
+		m_energy_bolts.at(i)->on_render(mesh_shader);
+	}
+
 	engine::renderer::end_scene();
 
+	//SHELL CAMERA SECTION 
+	engine::renderer::begin_scene(m_2d_camera, mesh_shader);
+	m_shell_camera->on_render2d(mesh_shader);
+	m_menu_handler->on_render2d(mesh_shader);
+	engine::renderer::end_scene();
+
+	
+	//
 	const auto text_shader = engine::renderer::shaders_library()->get("text_2D");
-	std::string t =  std::to_string(m_menuitems.size());
 	glm::vec3 ps = m_3d_camera.position();
-	std::string pos = "x: " + std::to_string(ps.x) + " y: " + std::to_string(ps.y) + " z:" + std::to_string(ps.z);
-	m_text_manager->render_text(text_shader,pos, 10.f, (float)engine::application::window().height() - 25.f, 0.5f, glm::vec4(1.f, 0.5f, 0.f, 1.f));
+	std::string poss = "x: " + std::to_string(ps.x) + " y: " + std::to_string(ps.y) + " z:" + std::to_string(ps.z);
+	m_text_manager->render_text(text_shader,poss, 10.f, (float)engine::application::window().height() - 25.f, 0.5f, glm::vec4(1.f, 0.5f, 0.f, 1.f));
+	poss = "Current Shell: " + std::to_string(m_shell_camera->get_current_shell()) + " Container Size: " + std::to_string(m_shell_camera->get_container_size());
+	m_text_manager->render_text(text_shader, poss, 10.f, (float)engine::application::window().height() - 55.f, 0.5f, glm::vec4(1.f, 0.5f, 0.f, 1.f));
+
 }
 
 
@@ -218,20 +291,44 @@ void sb_mechanics_layer::on_event(engine::event& event)
 	if (event.event_type() == engine::event_type_e::key_pressed)
 	{
 		auto& e = dynamic_cast<engine::key_pressed_event&>(event);
-		if (e.key_code() == engine::key_codes::KEY_TAB)
-		{
-			engine::render_command::toggle_wireframe();
+		if (!on_menu) {
+			if (e.key_code() == engine::key_codes::KEY_TAB)
+			{
+				engine::render_command::toggle_wireframe();
+			}
+			if (e.key_code() == engine::key_codes::KEY_C) {
+				m_3d_camera.start_crouch();
+			}
+			if (e.key_code() == engine::key_codes::KEY_G) {
+				m_3d_camera.swap_view();
+				m_shell_camera->swap();
+
+			}
+			if (e.key_code() == engine::key_codes::KEY_F) {
+				place_shell_camera();
+			}
+
+
+			//swapping camera
+			if (e.key_code() == engine::key_codes::KEY_COMMA) {
+				cycle_shell(-1);
+			}
+			if (e.key_code() == engine::key_codes::KEY_PERIOD) {
+				cycle_shell(1);
+			}
+
+
 		}
-		if (e.key_code() == engine::key_codes::KEY_C) {
-			m_3d_camera.start_crouch();
+		else {
+			if (e.key_code() == engine::key_codes::KEY_SPACE) {
+				m_3d_camera.swap_view();
+				on_menu = false;
+				m_menu_handler->swap();
+			}
 		}
-		if (e.key_code() == engine::key_codes::KEY_G) {
-			m_3d_camera.swap_view();
-	
-		}
-		if (e.key_code() == engine::key_codes::KEY_F) {
-			place_shell_camera();
-		}
+
+
+
 	}
 	if (event.event_type() == engine::event_type_e::key_released) {
 		auto& e = dynamic_cast<engine::key_released_event&>(event);

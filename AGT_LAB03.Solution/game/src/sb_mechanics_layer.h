@@ -1,6 +1,8 @@
 #pragma once
 #include <engine.h>
-
+#include "shell_camera.h"
+#include "menu_handler.h"
+#include "energy_trap_rays.h"
 class sb_mechanics_layer : public engine::layer
 {
 public: 
@@ -12,21 +14,36 @@ public:
 	void on_event(engine::event& event) override;
 
 	void place_shell_camera();
+	void cycle_shell(int direction);
 
 
 private:
 
+	bool on_menu = true;
+
 	engine::ref<engine::skybox>			m_skybox{};
 	engine::ref<engine::game_object>	m_terrain{};
+	engine::ref<engine::game_object>	m_menu_background{};
+
 	engine::ref<engine::game_object>	m_tree{};
-	engine::ref<engine::game_object>	m_crab{};
-	engine::ref<engine::game_object>	m_shell{};
 
-	engine::ref<engine::game_object> m_letter{};
 
-	std::vector<engine::ref<engine::game_object>> m_menuitems{}; 
+	engine::ref<engine::game_object>	m_claw{};
 
-	engine::ref<engine::material>		m_material{}; 
+	engine::ref<engine::game_object>	m_tricube{};
+	engine::ref<engine::game_object>	m_tricube2{};
+
+	engine::ref<engine::game_object>	m_tetrahedron{};
+
+
+
+
+
+	engine::ref<engine::material>		m_material{};
+	engine::ref<engine::material>		m_tricube_material{};
+	engine::ref<engine::material>		m_tetrahedron_material{};
+
+
 	engine::DirectionalLight            m_directionalLight;
 	std::vector<engine::ref<engine::game_object>>     m_game_objects{};
 
@@ -35,5 +52,10 @@ private:
 	engine::ref<engine::text_manager>	m_text_manager{};
 	engine::orthographic_camera       m_2d_camera;
 	engine::perspective_camera        m_3d_camera;
+
+	engine::ref<shell_camera>		m_shell_camera{};
+	engine::ref<menu_handler>		m_menu_handler{};
+	std::vector<engine::ref<energy_trap_rays>>		m_energy_bolts{};
+
 
 };
