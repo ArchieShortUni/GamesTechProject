@@ -165,6 +165,10 @@ m_3d_camera((float)engine::application::window().width(), (float)engine::applica
 	m_shell_camera = shell_camera::create(1.6f, 0.9f);
 
 	m_menu_handler = menu_handler::create(1.6f, 0.9f);
+
+	m_game_manager = game_manager::create(m_3d_camera); 
+
+	
 }
 
 sb_mechanics_layer::~sb_mechanics_layer() {}
@@ -199,7 +203,7 @@ void sb_mechanics_layer::cycle_shell(int direction) {
 
 void sb_mechanics_layer::on_update(const engine::timestep& time_step) {
 	m_3d_camera.on_update(time_step);
-
+	m_game_manager->on_update(time_step);
 	m_physics_manager->dynamics_world_update(m_game_objects, double(time_step));
 
 	for (uint32_t i = 0; i < m_energy_bolts.size(); i++) {
@@ -258,6 +262,7 @@ void sb_mechanics_layer::on_render() {
 
 	m_shell_camera->on_render3d(mesh_shader);
 	m_menu_handler->on_render3d(mesh_shader);
+	m_game_manager->on_render3d(mesh_shader);
 	//m_material->submit(mesh_shader);
 	engine::renderer::submit(mesh_shader, m_tricube);
 	engine::renderer::submit(mesh_shader, m_tricube2);
@@ -272,17 +277,26 @@ void sb_mechanics_layer::on_render() {
 	engine::renderer::begin_scene(m_2d_camera, mesh_shader);
 	m_shell_camera->on_render2d(mesh_shader);
 	m_menu_handler->on_render2d(mesh_shader);
+	m_game_manager->on_render2d(mesh_shader);
+
 	engine::renderer::end_scene();
 
 	
-	//
-	const auto text_shader = engine::renderer::shaders_library()->get("text_2D");
-	glm::vec3 ps = m_3d_camera.position();
-	std::string poss = "x: " + std::to_string(ps.x) + " y: " + std::to_string(ps.y) + " z:" + std::to_string(ps.z);
-	m_text_manager->render_text(text_shader,poss, 10.f, (float)engine::application::window().height() - 25.f, 0.5f, glm::vec4(1.f, 0.5f, 0.f, 1.f));
-	poss = "Current Shell: " + std::to_string(m_shell_camera->get_current_shell()) + " Container Size: " + std::to_string(m_shell_camera->get_container_size());
-	m_text_manager->render_text(text_shader, poss, 10.f, (float)engine::application::window().height() - 55.f, 0.5f, glm::vec4(1.f, 0.5f, 0.f, 1.f));
+	
+	//m_game_manager->on_render2d(mesh_shader);
 
+	//std::string percent = std::to_string(m_beacon->get_percent());
+	//percent.erase(percent.find_last_not_of('0') + 1, std::string::npos);
+	//percent.pop_back();
+	//std::string b_p = "Beacon 1 Percentage: "+percent;
+	//m_text_manager->render_text(text_shader, b_p, 10.f, (float)engine::application::window().height() - 300.f, 0.5f, glm::vec4(1.f, 0.5f, 0.f, 1.f));
+
+
+	//Testing
+	//std::string t = std::to_string(m_beacon->get_active_switches());
+	//m_text_manager->render_text(text_shader, t, 10.f, (float)engine::application::window().height() - 400.f, 0.5f, glm::vec4(1.f, 0.5f, 0.f, 1.f));
+
+	
 }
 
 
@@ -317,6 +331,19 @@ void sb_mechanics_layer::on_event(engine::event& event)
 				cycle_shell(1);
 			}
 
+			//Testing
+			if (e.key_code() == engine::key_codes::KEY_K) {
+				//
+			}
+			if (e.key_code() == engine::key_codes::KEY_E) {
+				m_game_manager->interactStart();
+			}
+
+			if (e.key_code() == engine::key_codes::KEY_LEFT_SHIFT) {
+				m_3d_camera.start_sprint();
+			}
+
+
 
 		}
 		else {
@@ -324,8 +351,7 @@ void sb_mechanics_layer::on_event(engine::event& event)
 				m_3d_camera.swap_view();
 				on_menu = false;
 				m_menu_handler->swap();
-			}
-		}
+}}
 
 
 
@@ -335,5 +361,13 @@ void sb_mechanics_layer::on_event(engine::event& event)
 		if (e.key_code() == engine::key_codes::KEY_C) {
 			m_3d_camera.end_crouch(); 
 		}
+		if (e.key_code() == engine::key_codes::KEY_E) {
+			m_game_manager->interactEnd();
+		}
+
+		if (e.key_code() == engine::key_codes::KEY_LEFT_SHIFT) {
+			m_3d_camera.end_sprint();
+		}
+
 	}
 }

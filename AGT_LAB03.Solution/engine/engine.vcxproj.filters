@@ -1369,7 +1369,10 @@
       <Filter>src\platform\windows</Filter>
     </ClInclude>
     <ClInclude Include="src\engine\entities\shapes\tricube.h">
-      <Filter>src\engine\entities\shapes</Filter>
+      <Filter>src\engine\entities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\entities\bounding_box.h">
+      <Filter>src\engine\entities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1504,6 +1507,9 @@
     </ClCompile>
     <ClCompile Include="src\engine\entities\shapes\tricube.cpp">
       <Filter>src\engine\entities\shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\entities\bounding_box.cpp">
+      <Filter>src\engine\entities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

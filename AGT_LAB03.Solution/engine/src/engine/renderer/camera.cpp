@@ -59,15 +59,17 @@ void engine::orthographic_camera::update_view_matrix()
 
 //================== Perspective Camera [3D] ==================================
 
-engine::perspective_camera::perspective_camera( 
-    float width, float height, 
-    float fov /*= 45.f*/, 
-    float near_z /*= 0.1f*/, float far_z /*= 100.f*/) 
-    : m_projection_mat(glm::perspective(glm::radians(fov), width / height, near_z, far_z)), 
-    m_aspect_ratio(width / height), 
-    m_fov(fov), 
-    m_near_plane(near_z), 
-    m_far_plane(far_z) 
+engine::perspective_camera::perspective_camera(
+    float width, float height,
+    float fov /*= 45.f*/,
+    float near_z /*= 0.1f*/, float far_z /*= 100.f*/)
+    : m_projection_mat(glm::perspective(glm::radians(fov), width / height, near_z, far_z)),
+    m_aspect_ratio(width / height),
+    m_fov(fov),
+    m_near_plane(near_z),
+    m_far_plane(far_z),
+    m_width(width),
+    m_height(height)
 { 
     //m_position = glm::vec3(0.0f, 1.0f, 3.0f);
     m_position = glm::vec3(0.0f, 2.0f, 20.0f);
@@ -109,7 +111,7 @@ void engine::perspective_camera::on_update(const timestep& timestep)
     else if (input::key_pressed(engine::key_codes::KEY_D)) // right 
         move(e_direction::right, timestep);
 
-
+    
     if (input::key_pressed(engine::key_codes::KEY_S)) // down 
         move(e_direction::backward, timestep);
     else if (engine::input::key_pressed(engine::key_codes::KEY_W)) // up 
@@ -129,8 +131,42 @@ void engine::perspective_camera::on_update(const timestep& timestep)
         if (m_position.y > crouching_height) {
             m_position.y -= crouch_step * timestep; 
         }
+    }
+
+
+    if (!sprinting) {
+        if (m_fov > min_fov) {
+            m_fov -= (fov_step * (non_linear_multiplier* non_linear_multiplier)) * timestep;
+            update_fov(m_fov);
+            non_linear_multiplier += .1f;
+        }
+        else { non_linear_multiplier = 1.f; }
+
+        if (sprint_speed > min_sprint_speed) {
+            sprint_speed -= (sprint_step * (sprint_mulitplayer* sprint_mulitplayer)) * timestep;
+            sprint_mulitplayer += .1f;
+        }
+        else { sprint_mulitplayer = 1.f; }
 
     }
+    else {
+        if (m_fov < max_fov) {
+            m_fov += (fov_step* (non_linear_multiplier * non_linear_multiplier)) * timestep;
+            update_fov(m_fov);
+            non_linear_multiplier += .2f;
+        }
+        else { non_linear_multiplier = 1.f; }
+
+        if (sprint_speed < max_sprint_speed) {
+            sprint_speed += (sprint_step * (sprint_mulitplayer * sprint_mulitplayer)) * timestep;
+            sprint_mulitplayer += .1f;
+        }
+        else { sprint_mulitplayer = 1.f; }
+    }
+
+
+
+
 
   //  m_rotation_angle += glm::vec3(1.0f, 0.0f, 0.0f);
     
@@ -185,9 +221,9 @@ void engine::perspective_camera::move(e_direction direction, timestep ts)
         m_position -= s_movement_speed * ts * glm::vec3(m_front_vector.x, 0, m_front_vector.z);
 
     if(direction == left) 
-        m_position -= s_movement_speed * ts * glm::vec3(m_right_vector.x, 0, m_right_vector.z);
+        m_position -= s_movement_speed * ts * sprint_speed* glm::vec3(m_right_vector.x, 0, m_right_vector.z);
     else if(direction == right) 
-        m_position += s_movement_speed * ts * glm::vec3(m_right_vector.x, 0, m_right_vector.z);
+        m_position += s_movement_speed * ts * sprint_speed* glm::vec3(m_right_vector.x, 0, m_right_vector.z);
 
     //LOG_CORE_TRACE("3d cam position: [{},{},{}]", m_position.x, m_position.y, m_position.z);
 }

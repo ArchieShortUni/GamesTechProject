@@ -3,6 +3,9 @@
 #include "shell_camera.h"
 #include "menu_handler.h"
 #include "energy_trap_rays.h"
+#include "beacon.h"
+#include "game_manager.h"
+
 class sb_mechanics_layer : public engine::layer
 {
 public: 
@@ -38,7 +41,6 @@ private:
 
 
 
-
 	engine::ref<engine::material>		m_material{};
 	engine::ref<engine::material>		m_tricube_material{};
 	engine::ref<engine::material>		m_tetrahedron_material{};
@@ -55,7 +57,8 @@ private:
 
 	engine::ref<shell_camera>		m_shell_camera{};
 	engine::ref<menu_handler>		m_menu_handler{};
+	engine::ref<game_manager>		m_game_manager{}; 
 	std::vector<engine::ref<energy_trap_rays>>		m_energy_bolts{};
-
-
+	//Testing
+	
 };

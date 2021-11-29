@@ -1,4 +1,4 @@
-#pragma once
+ #pragma once
 #include "engine/core/timestep.h"
 
 #define GLM_FORCE_CTOR_INIT
@@ -142,6 +142,38 @@ namespace engine
         void update_shell_position(glm::vec3 pos) { shell_position = pos; }
         void swap_view();
 
+
+        void set_position(glm::vec3 pos) { m_position = pos; }
+
+        //Sprinting 
+        void start_sprint() { sprinting = true;  sprint_speed = 3.f;
+     
+        }
+    
+        void end_sprint() { sprinting = false; sprint_speed = 1.f;
+       
+        }
+        bool is_sprinting() { return sprinting; }
+
+        bool sprinting = false; 
+        float sprint_speed = 1.f;
+        //Sprint stepping variable
+        float sprint_step = .03f;
+        float max_sprint_speed = 2.5f;
+        float min_sprint_speed = 1.f;
+        float sprint_mulitplayer = 1.f;
+        //fov stepping
+        float fov_step = 20.f;
+        float max_fov = 95.f;
+        float min_fov = 80.f;
+        float non_linear_multiplier = 1.f;
+        //Fov editing variables
+        void update_fov(float fv) {
+            m_projection_mat = glm::perspective(glm::radians(fv), m_width / m_height, m_near_plane, m_far_plane);
+        }
+
+        //Custom stuff ^^
+
         void on_update(const timestep& timestep) override;
         void update_rail(const timestep& ts);
 
@@ -197,7 +229,11 @@ namespace engine
         /// \brief Near clipping plane. 
         float m_near_plane = 0.1f; 
         /// \brief ar clipping plane. 
-        float m_far_plane = 100.f; 
+        float m_far_plane = 100.f;
+        //
+        float m_width;
+
+        float m_height;
 
         /// \brief in units per seconds. 
         inline static float s_movement_speed = SPEED; 
