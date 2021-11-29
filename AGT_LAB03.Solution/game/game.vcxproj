@@ -138,6 +138,7 @@
     <ClInclude Include="src\menu_handler.h" />
     <ClInclude Include="src\player.h" />
     <ClInclude Include="src\progress_bar.h" />
+    <ClInclude Include="src\projectile.h" />
     <ClInclude Include="src\quad.h" />
     <ClInclude Include="src\sb_mechanics_layer.h" />
     <ClInclude Include="src\shell_camera.h" />
@@ -150,6 +151,7 @@
     <ClCompile Include="src\game_manager.cpp" />
     <ClCompile Include="src\menu_handler.cpp" />
     <ClCompile Include="src\player.cpp" />
+    <ClCompile Include="src\projectile.cpp" />
     <ClCompile Include="src\quad.cpp" />
     <ClCompile Include="src\sb_mechanics_layer.cpp" />
     <ClCompile Include="src\shell_camera.cpp" />
