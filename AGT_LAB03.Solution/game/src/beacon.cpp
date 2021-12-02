@@ -9,7 +9,7 @@ beacon::beacon(glm::vec3 colour,glm::vec3 position, int switch_num, float switch
 
 
 	engine::ref<engine::model> b_model = engine::model::create("assets/models/static/beacon.obj");
-	m_cube = engine::cuboid::create(glm::vec3(.08f, .3f, .08f), false);
+	m_cube = engine::cuboid::create(glm::vec3(.08f*scale_factor, .3f * scale_factor, .08f * scale_factor), false);
 	
 	b_props.meshes = b_model->meshes();
 	b_props.textures = b_model->textures();

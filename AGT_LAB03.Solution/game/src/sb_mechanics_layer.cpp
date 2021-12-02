@@ -154,11 +154,11 @@ m_3d_camera((float)engine::application::window().width(), (float)engine::applica
 	}
 
 
-	m_game_objects.push_back(m_terrain);
-	m_game_objects.push_back(m_tree);
+//	m_game_objects.push_back(m_terrain);
+	//m_game_objects.push_back(m_tree);
 	//m_game_objects.push_back(m_crab); 
 
-	m_physics_manager = engine::bullet_manager::create(m_game_objects);
+	//m_physics_manager = engine::bullet_manager::create(m_game_objects);
 
 	m_text_manager = engine::text_manager::create();
 
@@ -166,7 +166,9 @@ m_3d_camera((float)engine::application::window().width(), (float)engine::applica
 
 	m_menu_handler = menu_handler::create(1.6f, 0.9f);
 
-	m_game_manager = game_manager::create(m_3d_camera); 
+	m_game_manager = game_manager::create(m_3d_camera, 1.6f, 0.9f);
+
+	m_game_manager->add_to_game_objects(m_terrain);
 
 	
 }
@@ -204,7 +206,7 @@ void sb_mechanics_layer::cycle_shell(int direction) {
 void sb_mechanics_layer::on_update(const engine::timestep& time_step) {
 	m_3d_camera.on_update(time_step);
 	m_game_manager->on_update(time_step);
-	m_physics_manager->dynamics_world_update(m_game_objects, double(time_step));
+	//m_physics_manager->dynamics_world_update(m_game_objects, double(time_step));
 
 	for (uint32_t i = 0; i < m_energy_bolts.size(); i++) {
 		m_energy_bolts.at(i)->on_update(time_step);
@@ -243,27 +245,13 @@ void sb_mechanics_layer::on_render() {
 
 	
 
-	//FPS CLAW
-    glm::vec3 pos = m_3d_camera.position();
-	glm::vec3 forward = m_3d_camera.front_vector();
-	glm::vec3 right = m_3d_camera.right_vector();
 
-	float theta = engine::PI / 2.0f - acos(forward.y);
-	float phi = atan2(forward.x, forward.z);
-
-	glm::vec3 p = pos + 0.5f * forward + 0.2f * right;
-	//glm::vec3 p = glm::vec3(2, 2, 2);
-	glm::mat4 claw_transform(1.0f);
-	glm::translate(claw_transform, p);
-	//glm::rotate(claw_transform, phi, glm::vec3(0.f, 1.f, 0.f));
-	//glm::rotate(claw_transform, -theta, glm::vec3(1.f, 0.f, 0.f));
-	//glm::scale(claw_transform, glm::vec3(0.25, 0.25, 0.25));
-	//engine::renderer::submit(mesh_shader, claw_transform, m_claw);
 
 	m_shell_camera->on_render3d(mesh_shader);
 	m_menu_handler->on_render3d(mesh_shader);
 	m_game_manager->on_render3d(mesh_shader);
-	//m_material->submit(mesh_shader);
+	m_material->submit(mesh_shader);
+	//engine::renderer::submit(mesh_shader, m_turret);
 	engine::renderer::submit(mesh_shader, m_tricube);
 	engine::renderer::submit(mesh_shader, m_tricube2);
 
@@ -311,7 +299,7 @@ void sb_mechanics_layer::on_event(engine::event& event)
 				engine::render_command::toggle_wireframe();
 			}
 			if (e.key_code() == engine::key_codes::KEY_C) {
-				m_3d_camera.start_crouch();
+				m_game_manager->start_crouch();
 			}
 			if (e.key_code() == engine::key_codes::KEY_G) {
 				m_3d_camera.swap_view();
@@ -340,6 +328,7 @@ void sb_mechanics_layer::on_event(engine::event& event)
 			}
 
 			if (e.key_code() == engine::key_codes::KEY_LEFT_SHIFT) {
+				m_game_manager->start_sprint();
 				m_3d_camera.start_sprint();
 			}
 
@@ -359,13 +348,14 @@ void sb_mechanics_layer::on_event(engine::event& event)
 	if (event.event_type() == engine::event_type_e::key_released) {
 		auto& e = dynamic_cast<engine::key_released_event&>(event);
 		if (e.key_code() == engine::key_codes::KEY_C) {
-			m_3d_camera.end_crouch(); 
+			m_game_manager->end_crouch();
 		}
 		if (e.key_code() == engine::key_codes::KEY_E) {
 			m_game_manager->interactEnd();
 		}
 
 		if (e.key_code() == engine::key_codes::KEY_LEFT_SHIFT) {
+			m_game_manager->end_sprint();
 			m_3d_camera.end_sprint();
 		}
 

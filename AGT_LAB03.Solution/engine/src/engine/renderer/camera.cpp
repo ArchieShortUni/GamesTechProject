@@ -88,7 +88,8 @@ engine::perspective_camera::perspective_camera(
     //m_view_mat = glm::translate(m_view_mat, start_position);
     m_view_projection_mat = m_projection_mat * m_view_mat; 
     LOG_CORE_TRACE("3d cam position: [{},{},{}]", m_position.x, m_position.y, m_position.z); 
-    LOG_CORE_TRACE("3d cam rotation: [{},{},{}]", m_rotation_angle.x, m_rotation_angle.y, m_rotation_angle.z); 
+    LOG_CORE_TRACE("3d cam rotation: [{},{},{}]", m_rotation_angle.x, m_rotation_angle.y, m_rotation_angle.z);
+    
 }
 
 void engine::perspective_camera::update_rail(const timestep& ts)
@@ -104,36 +105,7 @@ void engine::perspective_camera::on_update(const timestep& timestep)
 
     update_camera_vectors();
 
-
-    if (input::key_pressed(engine::key_codes::KEY_A)) // left 
-
-        move(e_direction::left, timestep);
-    else if (input::key_pressed(engine::key_codes::KEY_D)) // right 
-        move(e_direction::right, timestep);
-
-    
-    if (input::key_pressed(engine::key_codes::KEY_S)) // down 
-        move(e_direction::backward, timestep);
-    else if (engine::input::key_pressed(engine::key_codes::KEY_W)) // up 
-        move(e_direction::forward, timestep);
-
     //HANDLE FPS STUFF HERE
-    if (m_position.y > standing_height) { m_position.y = standing_height; }
-    else if (m_position.y < crouching_height) { m_position.y = crouching_height; }
-
-
-    if (!crouched) {
-        if (m_position.y < standing_height) {
-            m_position.y += crouch_step * timestep; 
-        }
-    }
-    else {
-        if (m_position.y > crouching_height) {
-            m_position.y -= crouch_step * timestep; 
-        }
-    }
-
-
     if (!sprinting) {
         if (m_fov > min_fov) {
             m_fov -= (fov_step * (non_linear_multiplier* non_linear_multiplier)) * timestep;
@@ -141,12 +113,6 @@ void engine::perspective_camera::on_update(const timestep& timestep)
             non_linear_multiplier += .1f;
         }
         else { non_linear_multiplier = 1.f; }
-
-        if (sprint_speed > min_sprint_speed) {
-            sprint_speed -= (sprint_step * (sprint_mulitplayer* sprint_mulitplayer)) * timestep;
-            sprint_mulitplayer += .1f;
-        }
-        else { sprint_mulitplayer = 1.f; }
 
     }
     else {
@@ -157,11 +123,6 @@ void engine::perspective_camera::on_update(const timestep& timestep)
         }
         else { non_linear_multiplier = 1.f; }
 
-        if (sprint_speed < max_sprint_speed) {
-            sprint_speed += (sprint_step * (sprint_mulitplayer * sprint_mulitplayer)) * timestep;
-            sprint_mulitplayer += .1f;
-        }
-        else { sprint_mulitplayer = 1.f; }
     }
 
 

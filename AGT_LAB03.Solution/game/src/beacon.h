@@ -1,7 +1,8 @@
 #pragma once
 
 #include <engine.h>
-#include "engine/entities/bounding_box.h"
+
+#include"engine/entities/bounding_box_bullet.h"
 class beacon_switch {
 public:
 	beacon_switch( glm::vec3 colour) {
@@ -12,6 +13,8 @@ public:
 		sw_props.scale = glm::vec3(1.f);
 		sw_props.position = glm::vec3(0.f, -2.f, 0.f);
 		sw_props.bounding_shape = glm::vec3(1.f, 1.f, 1.f);
+		sw_props.type = 0;
+		sw_props.mass = 100000;
 
 		switch_box.set_box(sw_props.bounding_shape.x * sw_props.scale.x,
 			sw_props.bounding_shape.y * sw_props.scale.x,
@@ -19,6 +22,8 @@ public:
 			sw_props.position);
 
 		switch_obj = engine::game_object::create(sw_props);
+
+		switch_obj->set_angular_factor_lock(true);
 
 		m_switch_material = engine::material::create(1.0f, colour,
 			colour, glm::vec3(0.5f, 0.5f, 0.5f), 1.0f);
@@ -41,7 +46,9 @@ public:
 		switch_box.on_render(2.5f, 0.f, 0.f, shader);
 	}
 
-	void set_position(glm::vec3 position) { switch_obj->set_position(position); switch_box.on_update(glm::vec3(position.x,position.y-.5f,position.z)); }
+	void set_position(glm::vec3 position) { switch_obj->set_position(position);
+	switch_box.on_update(glm::vec3(position.x, position.y - .5f, position.z),switch_obj->rotation_amount(), switch_obj->rotation_axis());
+	}
 
 	void swap_state() {
 		if (is_on) { is_on = false; m_switch_material->set_ambient(glm::vec3(1.0f, 0.64706f, .0f)); }
@@ -52,6 +59,7 @@ public:
 
 	engine::bounding_box get_hitbox() { return switch_box; }
 
+	engine::ref<engine::game_object>& get_switch_object() { return switch_obj; }
 private:
 	bool is_on = true;
 	glm::vec3 position;
@@ -91,7 +99,7 @@ public:
 
 private:
 	bool beacon_active = true;
-	float scale_factor = 1.f;
+	float scale_factor = 3.f;
 
 	int sw_to_activate;
 	float beam_speed = 0;

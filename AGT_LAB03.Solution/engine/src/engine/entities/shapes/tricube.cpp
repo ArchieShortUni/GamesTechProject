@@ -49,7 +49,7 @@ engine::tricube::tricube(std::vector<glm::vec3> vertices) : m_vertices(vertices)
 		{vertices.at(6),	normals.at(2),	{0.f,1.f}}, //7
 
 		//S
-		{vertices.at(3),	normals.at(4),	{0.f,0.f}}, //8
+		{vertices.at(3),	normals.at(4),	{0.f,0.f}}, //8A
 		{vertices.at(2),	normals.at(4),	{1.f,0.f}}, //9 
 		{vertices.at(6),	normals.at(4),	{1.f,1.f}}, //10
 		{vertices.at(7),	normals.at(4),	{0.f,1.f}}, //11
@@ -122,7 +122,7 @@ engine::tricube::tricube(std::vector<glm::vec3> vertices) : m_vertices(vertices)
 		0,2,1,	0,3,2,			//N
 		4,6,5,	4,7,6,			//E
 		8,10,9, 8,11,10,		//S
-		12,14,13, 12,15,14,		//E
+		12,14,13, 12,15,14,		//w
 		16,18,17,				//NT
 		19,21,20,				//ET
 		22,24,23,				//ST

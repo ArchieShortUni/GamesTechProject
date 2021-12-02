@@ -2,7 +2,11 @@
 #include "game_manager.h"
 #include "quad.h"
 
-game_manager::game_manager(engine::perspective_camera& camera) {
+//TESTING
+#include "engine/core/input.h"
+#include "engine/key_codes.h"
+
+game_manager::game_manager(engine::perspective_camera& camera, float width, float height) :cam(camera){
 
 	//Hard code beacon data
 	glm::vec3 beacon1_pos = glm::vec3(3.f,.5f,10.f);
@@ -29,70 +33,130 @@ game_manager::game_manager(engine::perspective_camera& camera) {
 	beacon2_bar = progress_bar::create(.02f, .3f, glm::vec2(-1.25f, -0.5f), 10.f, "assets/textures/bar_back.bmp", "assets/textures/bar_front.bmp", "assets/textures/energy_yellow.bmp");
 	beacon3_bar = progress_bar::create(.02f, .3f, glm::vec2(-1.25f, -0.62f), 10.f, "assets/textures/bar_back.bmp", "assets/textures/bar_front.bmp", "assets/textures/energy_yellow.bmp");
 
+	health_bar = progress_bar::create(.02f, .6f, glm::vec2(-.0f, 0.7f), 10.f, "assets/textures/bar_back.bmp", "assets/textures/bar_back.bmp", "assets/textures/health_bar.bmp");
+
 	//Player class info
-	player = player::create(camera);
-	player->initialise();
+	player = player::create(camera,m_game_objects);
+	player->initialise(width,height);
+
+
+	m_game_objects.push_back(player->get_player_object());
+
+	for (int i = 0; i < level_beacons.size(); i++) {
+		std::vector<engine::ref<beacon_switch>> switches = level_beacons.at(i)->get_switches();
+
+		for (int j = 0; j < switches.size(); j++) {
+			m_game_objects.push_back(switches.at(j)->get_switch_object());
+		}
+	}
+
+	m_explosion = explosion::create("assets/textures/Explosion.tga", 12, 1, 12);
+	//m_game_objects.push_back(m_crab); 
+
+	m_physics_manager = engine::bullet_manager::create(m_game_objects);
 
 }
 
 
 void game_manager::on_update(const engine::timestep& time_step) {
-	//Player control stuff
-	player->on_update(time_step);
 
-	engine::bounding_box player_hitbox = player->get_hitbox();
-	
+	if (player->is_alive()) {
+		level_time += 1 * time_step;
+		m_physics_manager->dynamics_world_update(m_game_objects, double(time_step));
+		//Player control stuff
+		player->on_update(time_step);
+		player->update_camera();
+
+		m_explosion->on_update(time_step);
 
 
-	int beacons_add_percent = 0;
-	for (int i = 0; i < level_beacons.size(); i++) {
-		level_beacons.at(i)->on_update(time_step);
-		beacons_add_percent += level_beacons.at(i)->get_percent();
-
-		std::vector<engine::ref<beacon_switch>> switches = level_beacons.at(i)->get_switches();
-
-		for (int j = 0; j < switches.size(); j++) {
-			if (switches.at(j)->get_hitbox().collision(player_hitbox)) {
-				player->update_player_data(last_player_pos);
-			}
-
-			if (player->get_interaction()) {
-				if (switches.at(j)->get_hitbox().collision(player->get_interaction_hitbox())) {
-					switches.at(j)->swap_state();
-					player->interact_false();
+		/// Player Projectile Hitboxes
+		std::vector<engine::ref<projectile>>& player_projectiles = player->get_active_projectiles();
+		for (int i = 0; i < player_projectiles.size(); i++) {
+			//Turret Collision
+			bool hit = false;
+			for (int t = 0; t < active_turrets.size(); t++) {
+				if ((player_projectiles.at(i)->get_hitbox().collision(active_turrets.at(t)->get_hit_box()))&&!hit) {
+					active_turrets.at(t)->take_damage(10);
+					hit = true;	
 				}
 			}
+			if (hit) {
+				player_projectiles.erase(player_projectiles.begin() + i);
 
+			}
+		}
+		
+		engine::bounding_box player_hitbox = player->get_hitbox();
+
+
+
+		int beacons_add_percent = 0;
+		for (int i = 0; i < level_beacons.size(); i++) {
+			level_beacons.at(i)->on_update(time_step);
+			beacons_add_percent += level_beacons.at(i)->get_percent();
+
+
+			std::vector<engine::ref<beacon_switch>> switches = level_beacons.at(i)->get_switches();
+
+			for (int j = 0; j < switches.size(); j++) {
+
+				if (player->get_interaction()) {
+					if (switches.at(j)->get_hitbox().collision(player->get_interaction_hitbox())) {
+						switches.at(j)->swap_state();
+						player->interact_false();
+					}
+				}
+			}
 		}
 
 
+		last_player_pos = player->get_player_position();
+		//update the total percentage
+
+		current_level_percent = (100 / level_complete_percent) * beacons_add_percent;
+
+		level_bar->update_bar((int)current_level_percent);
+		beacon1_bar->update_bar((int)level_beacons.at(0)->get_percent());
+		beacon2_bar->update_bar((int)level_beacons.at(1)->get_percent());
+		beacon3_bar->update_bar((int)level_beacons.at(2)->get_percent());
+		health_bar->update_bar((int)player->get_health());
+
+
+		timer_test += 1 * time_step;
+
+
+		///TURRET TESTS DELETE LATER
+		for (int i = 0; i < active_turrets.size(); i++) {
+			active_turrets.at(i)->on_update(time_step);
+			if (active_turrets.at(i)->get_health() == 0) {
+				m_explosion->activate(active_turrets.at(i)->get_pos(), 2.f, 2.f);
+				active_turrets.erase(active_turrets.begin() + i);
+
+			}
+		}
+
+		if (engine::input::key_pressed(engine::key_codes::KEY_T)) {
+			if (timer_test > 1.f) {
+				t = turret::create(player->get_player_position(), 100, player);
+				active_turrets.push_back(t);
+			}
+			timer_test = 0;
+		}
+		
 	}
-
-
-
-	last_player_pos = player->get_player_position();
-	//update the total percentage
-
-	current_level_percent = (100 / level_complete_percent)*beacons_add_percent;
-
-	level_bar->update_bar((int)current_level_percent);
-	beacon1_bar->update_bar((int)level_beacons.at(0)->get_percent());
-	beacon2_bar->update_bar((int)level_beacons.at(1)->get_percent());
-	beacon3_bar->update_bar((int)level_beacons.at(2)->get_percent());
-
-
-
-
-
-
 }
 
 void game_manager::on_render2d(engine::ref<engine::shader> shader) {
-	//Beacon Data 
+	//Beacon Data
+	
 	level_bar->on_render2d(shader);
 	beacon1_bar->on_render2d(shader);
 	beacon2_bar->on_render2d(shader);
 	beacon3_bar->on_render2d(shader);
+	health_bar->on_render2d(shader);
+	//player->on_render2d(shader); 
+	player->on_render2d(shader);
 
 	const auto text_shader = engine::renderer::shaders_library()->get("text_2D");
 	std::string percent1 = std::to_string(level_beacons.at(0)->get_percent());
@@ -113,13 +177,18 @@ void game_manager::on_render2d(engine::ref<engine::shader> shader) {
 	std::string b_p3 = "Beacon 3 Percentage: " + percent3;
 	std::string overall_percentage = "Overall Percentage: " + percent4;
 
+
+	//
+	std::string test = "Playere Health: " + std::to_string(player->get_health());
 	m_text_manager->render_text(text_shader, b_p1, 20.f, (float)engine::application::window().height() - 500.f, 0.3f, glm::vec4(bcolour1,1.f));
 	m_text_manager->render_text(text_shader, b_p2, 20.f, (float)engine::application::window().height() - 545.f, 0.3f, glm::vec4(bcolour2, 1.f));
 	m_text_manager->render_text(text_shader, b_p3, 20.f, (float)engine::application::window().height() - 590.f, 0.3f, glm::vec4(bcolour3, 1.f));
+	m_text_manager->render_text(text_shader, test, 20.f, (float)engine::application::window().height() - 700.f, 0.3f, glm::vec4(bcolour3, 1.f));
 	//m_text_manager->render_text(text_shader, overall_percentage, 10.f, (float)engine::application::window().height() - 590.f, 0.5f, glm::vec4(1.f, 0.5f, 0.f, 1.f));
 
-
-
+	if (!player->is_alive()) {
+		m_text_manager->render_text(text_shader, "GAME OVER", (float)engine::application::window().width() - ((float)engine::application::window().width() / 2), (float)engine::application::window().height() - ((float)engine::application::window().height() / 2), 2.f, glm::vec4(glm::vec3(1.f,1.f,1.f), 1.f));
+	}
 
 
 
@@ -129,11 +198,15 @@ void game_manager::on_render3d(engine::ref<engine::shader> shader) {
 		level_beacons.at(i)->on_render(shader); 
 	}
 
+	for (int i = 0; i < active_turrets.size(); i++) {
+		active_turrets.at(i)->on_render(shader);
+	}
 	
 	player->on_render(shader);
+	m_explosion->on_render(cam, shader);
 }
 
-engine::ref<game_manager> game_manager::create(engine::perspective_camera& camera)
+engine::ref<game_manager> game_manager::create(engine::perspective_camera& camera, float width, float height)
 {
-	return std::make_shared<game_manager>(camera);
+	return std::make_shared<game_manager>(camera,width,height);
 }

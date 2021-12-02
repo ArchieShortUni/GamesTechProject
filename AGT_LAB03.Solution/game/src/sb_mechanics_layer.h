@@ -33,6 +33,7 @@ private:
 
 	engine::ref<engine::game_object>	m_claw{};
 
+	engine::ref<engine::game_object>	m_turret{};
 	engine::ref<engine::game_object>	m_tricube{};
 	engine::ref<engine::game_object>	m_tricube2{};
 

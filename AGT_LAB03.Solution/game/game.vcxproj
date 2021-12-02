@@ -134,6 +134,7 @@
     <ClInclude Include="src\beacon.h" />
     <ClInclude Include="src\energy_trap_rays.h" />
     <ClInclude Include="src\example_layer.h" />
+    <ClInclude Include="src\explosion.h" />
     <ClInclude Include="src\game_manager.h" />
     <ClInclude Include="src\menu_handler.h" />
     <ClInclude Include="src\player.h" />
@@ -142,11 +143,13 @@
     <ClInclude Include="src\quad.h" />
     <ClInclude Include="src\sb_mechanics_layer.h" />
     <ClInclude Include="src\shell_camera.h" />
+    <ClInclude Include="src\turret.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\beacon.cpp" />
     <ClCompile Include="src\energy_trap_rays.cpp" />
     <ClCompile Include="src\example_layer.cpp" />
+    <ClCompile Include="src\explosion.cpp" />
     <ClCompile Include="src\game.cpp" />
     <ClCompile Include="src\game_manager.cpp" />
     <ClCompile Include="src\menu_handler.cpp" />
@@ -155,6 +158,7 @@
     <ClCompile Include="src\quad.cpp" />
     <ClCompile Include="src\sb_mechanics_layer.cpp" />
     <ClCompile Include="src\shell_camera.cpp" />
+    <ClCompile Include="src\turret.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\engine\engine.vcxproj">
