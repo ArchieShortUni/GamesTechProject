@@ -61,7 +61,7 @@ public:
 
 	engine::ref<engine::game_object>& get_switch_object() { return switch_obj; }
 private:
-	bool is_on = true;
+	bool is_on = false;
 	glm::vec3 position;
 	glm::vec3 base_colour;
 	engine::game_object_properties sw_props{};

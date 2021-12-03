@@ -270,19 +270,6 @@ void sb_mechanics_layer::on_render() {
 	engine::renderer::end_scene();
 
 	
-	
-	//m_game_manager->on_render2d(mesh_shader);
-
-	//std::string percent = std::to_string(m_beacon->get_percent());
-	//percent.erase(percent.find_last_not_of('0') + 1, std::string::npos);
-	//percent.pop_back();
-	//std::string b_p = "Beacon 1 Percentage: "+percent;
-	//m_text_manager->render_text(text_shader, b_p, 10.f, (float)engine::application::window().height() - 300.f, 0.5f, glm::vec4(1.f, 0.5f, 0.f, 1.f));
-
-
-	//Testing
-	//std::string t = std::to_string(m_beacon->get_active_switches());
-	//m_text_manager->render_text(text_shader, t, 10.f, (float)engine::application::window().height() - 400.f, 0.5f, glm::vec4(1.f, 0.5f, 0.f, 1.f));
 
 	
 }
