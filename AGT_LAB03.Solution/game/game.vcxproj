@@ -134,6 +134,7 @@
     <ClInclude Include="src\ai_manager.h" />
     <ClInclude Include="src\beacon.h" />
     <ClInclude Include="src\behaviourTree.h" />
+    <ClInclude Include="src\enemy_ranged.h" />
     <ClInclude Include="src\energy_trap_rays.h" />
     <ClInclude Include="src\example_layer.h" />
     <ClInclude Include="src\explosion.h" />
@@ -150,6 +151,7 @@
   <ItemGroup>
     <ClCompile Include="src\ai_manager.cpp" />
     <ClCompile Include="src\beacon.cpp" />
+    <ClCompile Include="src\enemy_ranged.cpp" />
     <ClCompile Include="src\energy_trap_rays.cpp" />
     <ClCompile Include="src\example_layer.cpp" />
     <ClCompile Include="src\explosion.cpp" />

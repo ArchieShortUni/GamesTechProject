@@ -75,12 +75,25 @@ void game_manager::on_update(const engine::timestep& time_step) {
 		for (int i = 0; i < player_projectiles.size(); i++) {
 			//Turret Collision
 			bool hit = false;
-			for (int t = 0; t < active_turrets.size(); t++) {
-				if ((player_projectiles.at(i)->get_hitbox().collision(active_turrets.at(t)->get_hit_box()))&&!hit) {
-					active_turrets.at(t)->take_damage(10);
-					hit = true;	
+			if (!hit) {
+				for (int t = 0; t < active_turrets.size(); t++) {
+					if ((player_projectiles.at(i)->get_hitbox().collision(active_turrets.at(t)->get_hit_box())) && !hit) {
+						active_turrets.at(t)->take_damage(10);
+						hit = true;
+					}
 				}
 			}
+
+			if (!hit) {
+				for (int t = 0; t < active_enemies.size(); t++) {
+					if ((player_projectiles.at(i)->get_hitbox().collision(active_enemies.at(t)->get_hit_box())) && !hit) {
+						active_enemies.at(t)->take_damage(50);
+						hit = true;
+					}
+				}
+			}
+
+
 			if (hit) {
 				player_projectiles.erase(player_projectiles.begin() + i);
 
@@ -136,10 +149,22 @@ void game_manager::on_update(const engine::timestep& time_step) {
 			}
 		}
 
+		for (int i = 0; i < active_enemies.size(); i++) {
+			active_enemies.at(i)->on_update(time_step);
+			if (active_enemies.at(i)->get_health() == 0) {
+				m_explosion->activate(active_enemies.at(i)->get_pos(), 2.f, 2.f);
+				active_enemies.erase(active_enemies.begin() + i);
+
+			}
+		}
+
 		if (engine::input::key_pressed(engine::key_codes::KEY_T)) {
 			if (timer_test > 1.f) {
-				t = turret::create(player->get_player_position(), 100, player);
-				active_turrets.push_back(t);
+
+
+				enemy = enemy_ranged::create((player->get_player_position()+(cam.front_vector()*glm::vec3(3.f))), 100, player);
+				active_enemies.push_back(enemy);
+				m_game_objects.push_back(enemy->get_object());
 			}
 			timer_test = 0;
 		}
@@ -204,6 +229,11 @@ void game_manager::on_render3d(engine::ref<engine::shader> shader) {
 	
 	player->on_render(shader);
 	m_explosion->on_render(cam, shader);
+
+	//TEST
+	for (int i = 0; i < active_enemies.size(); i++) {
+		active_enemies.at(i)->on_render(shader);
+	}
 }
 
 engine::ref<game_manager> game_manager::create(engine::perspective_camera& camera, float width, float height)

@@ -5,6 +5,7 @@
 #include "player.h"
 #include "turret.h"
 #include "explosion.h"
+#include "enemy_ranged.h"
 class quad;
 
 class game_manager {
@@ -62,6 +63,11 @@ private:
 
 	float level_time = 0;
 	//TESTING TO BE DELETED LATER
+
+	engine::ref<enemy_ranged> enemy; 
+	std::vector<engine::ref<enemy_ranged>> active_enemies{};
+
+
 	float timer_test = 0;
 	std::vector<engine::ref<turret>> active_turrets{};
 	engine::ref<turret> t;
