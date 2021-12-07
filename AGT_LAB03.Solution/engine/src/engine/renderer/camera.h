@@ -120,7 +120,7 @@ namespace engine
         perspective_camera( 
             float width, float height,  
             float fov = 45.f,  
-            float near_z = 0.1f, float far_z = 100.f);
+            float near_z = 0.1f, float far_z = 200.f);
         //Height things
         bool crouched = false; 
         float crouch_step = 2.0f;

@@ -5,6 +5,7 @@
 #include "energy_trap_rays.h"
 #include "beacon.h"
 #include "game_manager.h"
+#include <engine/entities/shapes/heightmap.h>
 
 class sb_mechanics_layer : public engine::layer
 {
@@ -27,7 +28,10 @@ private:
 	engine::ref<engine::skybox>			m_skybox{};
 	engine::ref<engine::game_object>	m_terrain{};
 	engine::ref<engine::game_object>	m_menu_background{};
+	engine::ref<engine::game_object>	m_h_terrain{};
 
+	engine::ref<engine::heightmap>	  m_heightmap; 
+	float							  m_physical_terrain_height = 0.5f;
 
 
 	engine::ref<engine::material>		m_material{};

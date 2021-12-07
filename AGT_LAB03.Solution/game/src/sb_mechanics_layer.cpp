@@ -6,6 +6,7 @@
 #include "engine/events/key_event.h"
 #include "engine/utils/track.h"
 
+
 sb_mechanics_layer::sb_mechanics_layer() :m_2d_camera(-1.6f, 1.6f, -0.9f, 0.9f),
 m_3d_camera((float)engine::application::window().width(), (float)engine::application::window().height()) {
 
@@ -40,15 +41,29 @@ m_3d_camera((float)engine::application::window().width(), (float)engine::applica
 			(float)engine::application::window().height()));
 
 	m_skybox = engine::skybox::create(50.f,
-		{ engine::texture_2d::create("assets/textures/skyboxBeach/lost_at_sealf.bmp", true),
-		  engine::texture_2d::create("assets/textures/skyboxBeach/lost_at_seabk.bmp", true),
-		  engine::texture_2d::create("assets/textures/skyboxBeach/lost_at_seart.bmp", true),
-		  engine::texture_2d::create("assets/textures/skyboxBeach/lost_at_seaft.bmp", true),
-		  engine::texture_2d::create("assets/textures/skyboxBeach/lost_at_seaup.bmp", true),
-		  engine::texture_2d::create("assets/textures/skyboxBeach/lost_at_seadn.bmp", true)
+		{ engine::texture_2d::create("assets/textures/Simulation/tron_lf.bmp", true),
+		  engine::texture_2d::create("assets/textures/Simulation/tron_bk.bmp", true),
+		  engine::texture_2d::create("assets/textures/Simulation/tron_rt.bmp", true),
+		  engine::texture_2d::create("assets/textures/Simulation/tron_ft.bmp", true),
+		  engine::texture_2d::create("assets/textures/Simulation/tron_up.bmp", true),
+		  engine::texture_2d::create("assets/textures/Simulation/tron_dn.bmp", true)
 		});
 
-	std::vector<engine::ref<engine::texture_2d>> terrain_textures = { engine::texture_2d::create("assets/textures/ocean_terrain.bmp", false) };
+	m_heightmap = engine::heightmap::create("assets/textures/heightmap.bmp", "assets/textures/Terrain.bmp", 170.f, 170.f, glm::vec3(0.f, 0.5f, 0.f), 10.f);
+	engine::game_object_properties h_terrain_props;
+	//terrain_props.meshes = { terrain_shape->mesh() };
+	//terrain_props.textures = terrain_textures;
+	h_terrain_props.meshes = { m_heightmap->mesh() };
+	h_terrain_props.textures = { m_heightmap->texture() };
+	h_terrain_props.is_static = true;
+	h_terrain_props.type = 0;
+	//terrain_props.bounding_shape = glm::vec3(100.f, 0.5f, 100.f);
+	h_terrain_props.bounding_shape = glm::vec3(m_heightmap->terrain_size().x, m_physical_terrain_height, m_heightmap->terrain_size().y);
+	h_terrain_props.restitution = 0.92f;
+	m_h_terrain = engine::game_object::create(h_terrain_props);
+
+
+	std::vector<engine::ref<engine::texture_2d>> terrain_textures = { engine::texture_2d::create("assets/textures/Terrain.bmp", false) };
 	std::vector<engine::ref<engine::texture_2d>> menu_textures = { engine::texture_2d::create("assets/textures/menu.bmp", false) };
 	engine::ref<engine::terrain> terrain_shape = engine::terrain::create(100.f, 0.5f, 100.f);
 	engine::game_object_properties terrain_props;
@@ -70,6 +85,7 @@ m_3d_camera((float)engine::application::window().width(), (float)engine::applica
 	m_menu_handler = menu_handler::create(1.6f, 0.9f,m_menu_background);
 
 	m_game_manager = game_manager::create(m_3d_camera, 1.6f, 0.9f);
+
 
 	m_game_manager->add_to_game_objects(m_terrain);
 
@@ -136,6 +152,7 @@ void sb_mechanics_layer::on_render() {
 	if (on_menu) { engine::renderer::submit(mesh_shader, m_menu_background); }
 	else {
 	engine::renderer::submit(mesh_shader, m_terrain);
+	engine::renderer::submit(mesh_shader, m_h_terrain);
 	}
 
 	if (on_menu) { m_menu_handler->on_render3d(mesh_shader); }

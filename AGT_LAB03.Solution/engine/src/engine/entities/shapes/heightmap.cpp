@@ -43,6 +43,11 @@ engine::heightmap::heightmap(std::string sTerrainFilename, std::string sTextureF
 					glm::vec3 pos_image = glm::vec3((float)x, height, (float)z);
 					glm::vec3 pos = image_to_world_coord(pos_image);
 
+					if (pos.y < -.3f) {
+						pos.y = -.45f;
+						//std::cout << pos.y;
+					}
+
 					// Scale the terrain and store for later
 					pos.y *= terrainHeightScale;
 					m_heightMap[index] = pos.y;
