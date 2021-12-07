@@ -7,17 +7,14 @@
 
 #include "game_enums.h"
 
-class enemy_ranged {
-
-	
-
+class enemy_melee {
 
 public:
-	enemy_ranged(glm::vec3 pos, float h, engine::ref<player> targ, bool hasShotgun);
-	~enemy_ranged() {};
+	enemy_melee(glm::vec3 pos, float h, engine::ref<player> targ);
+	~enemy_melee() {};
 
-	static engine::ref<enemy_ranged> create(glm::vec3 pos, float h, engine::ref<player> targ, bool hasShotgun) {
-		return std::make_shared<enemy_ranged>(pos, h, targ,hasShotgun);
+	static engine::ref<enemy_melee> create(glm::vec3 pos, float h, engine::ref<player> targ) {
+		return std::make_shared<enemy_melee>(pos, h, targ);
 	}
 
 	void on_render(engine::ref<engine::shader> shader);
@@ -48,7 +45,7 @@ public:
 
 	void approach(const engine::timestep& time_step);
 
-	void shoot();
+	void melee();
 
 	void generate_patrol_point(float radius, float min_range);
 
@@ -58,29 +55,29 @@ public:
 		behaviorTree.run();
 	}
 
-	
+
 private:
-	bool shotgun = false;
+
 	float health = 100;
 	bool alive = true;
 	engine::game_object_properties bl_props{};
 
 	engine::game_object_properties enemy_props{};
 
-	
+
 	engine::ref<engine::game_object> m_enemy{};
 
 	engine::ref<player>  target{};
 
 	engine::bounding_box hitbox;
 
-	float time_since_last_shot = 0.f;
+	float time_since_last_hit = 0.f;
 
 	std::vector<engine::ref<projectile>> active_projectiles{};
 	bool is_active = false;
 	float last_angle = 0;
 
-	
+
 
 	//AI function variables\\
 
@@ -105,7 +102,7 @@ private:
 	BehaviourTree behaviorTree;
 	BehaviourTree::Selector selector[2];
 	BehaviourTree::Sequence sequence[2];
-	game_enums::state next_state = game_enums::state::idle; 
+	game_enums::state next_state = game_enums::state::idle;
 
 	bool action_bool = true;
 	bool player_in_range = false;
@@ -116,8 +113,9 @@ private:
 	Action targetInRange = Action(game_enums::state::decision, player_in_range, next_state);
 	//Execution Actions
 	Action patrol_action = Action(game_enums::state::patrol, action_bool, next_state);
-	Action shoot_action = Action(game_enums::state::shoot, action_bool, next_state);
+	Action melee_action = Action(game_enums::state::melee, action_bool, next_state);
 	Action approach_action = Action(game_enums::state::approach, action_bool, next_state);
 
 
 };
+#pragma once

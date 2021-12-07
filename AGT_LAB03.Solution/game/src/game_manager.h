@@ -6,6 +6,7 @@
 #include "turret.h"
 #include "explosion.h"
 #include "enemy_ranged.h"
+#include "ai_manager.h"
 class quad;
 
 class game_manager {
@@ -14,6 +15,8 @@ public:
 	~game_manager() {};
 
 	static engine::ref<game_manager>create(engine::perspective_camera& camera, float width, float height);
+
+	void initialise();
 
 	void on_render2d(engine::ref<engine::shader> shader);
 	void on_render3d(engine::ref<engine::shader> shader);
@@ -32,7 +35,11 @@ public:
 	void add_to_game_objects(engine::ref < engine::game_object> obj) { m_game_objects.push_back(obj); }
 
 private:
+
+
+	 
 	engine::ref<engine::bullet_manager> m_physics_manager{};
+	engine::ref<ai_manager> m_ai_manager{};
 	std::vector<engine::ref<engine::game_object>>     m_game_objects{};
 	
 	engine::perspective_camera& cam;
@@ -51,7 +58,9 @@ private:
 	float current_level_percent; 
 	engine::ref<engine::text_manager>	m_text_manager{};
 
+
 	std::vector<engine::ref<beacon>> level_beacons;
+	std::vector<engine::ref<beacon_switch>>  level_switches;
 	engine::ref<engine::texture_2d> m_texture;
 	engine::ref<quad> m_quad;
 

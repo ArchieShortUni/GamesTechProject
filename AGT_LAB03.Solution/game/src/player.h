@@ -26,13 +26,14 @@ public:
 	void on_update(const engine::timestep& time_step);
 	void on_render2d(engine::ref<engine::shader> shader);
 
-	void update_player_data(glm::vec3 new_position);
 	void update_camera();
 
 	glm::vec3 get_player_position() {
 		glm::vec3 position  =player_pos - (player_camera.front_vector()/glm::vec3(120.f));
 		return position; }
 	engine::bounding_box get_hitbox() { return player_hitbox;  }
+
+	glm::vec3 get_future_position(float seconds_in_future);
 
 
 	void interact_true(){
@@ -68,7 +69,7 @@ public:
 
 	engine::ref<engine::game_object>& get_player_object() { return player_object; }
 	std::vector<engine::ref<projectile>>& get_active_projectiles() { return active_projectiles; }
-
+	engine::perspective_camera& get_camera() { return player_camera; }
 
 private:
 	glm::vec3 player_pos;
@@ -89,12 +90,25 @@ private:
 	float movement_speed = 2.5f;
 	bool sprinting = false;
 	float sprint_speed = 1.f;
+
+	enum class lastdirection {
+		foward,
+		back,
+		left,
+		right
+	};
+
+	lastdirection ld;
+
 	//Sprint stepping variable
 	float sprint_step = .06f;
 	float max_sprint_speed = 3.5f;
 	float min_sprint_speed = 1.f;
 	float sprint_mulitplayer = 1.f;
 
+	float time_since_last_jump = 0.f;
+	float up_speed = 0.f;
+	float gravity = -5.f;
 	//Crouch
 	bool crouched = false;
 	float crouch_step = 2.0f;

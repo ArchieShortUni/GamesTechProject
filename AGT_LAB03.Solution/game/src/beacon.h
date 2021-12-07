@@ -50,6 +50,8 @@ public:
 	switch_box.on_update(glm::vec3(position.x, position.y - .5f, position.z),switch_obj->rotation_amount(), switch_obj->rotation_axis());
 	}
 
+	glm::vec3 get_position() { return switch_obj->position(); }
+
 	void swap_state() {
 		if (is_on) { is_on = false; m_switch_material->set_ambient(glm::vec3(1.0f, 0.64706f, .0f)); }
 		else { is_on = true; m_switch_material->set_ambient(glm::vec3(base_colour));
@@ -61,7 +63,7 @@ public:
 
 	engine::ref<engine::game_object>& get_switch_object() { return switch_obj; }
 private:
-	bool is_on = false;
+	bool is_on = true;
 	glm::vec3 position;
 	glm::vec3 base_colour;
 	engine::game_object_properties sw_props{};

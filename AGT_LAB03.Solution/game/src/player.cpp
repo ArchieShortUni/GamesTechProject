@@ -18,6 +18,7 @@ void player::initialise(float width, float height) {
 	player_props.rotation_axis = glm::vec3(0.f, 1.f, 0.f);
 	player_props.type = 0;
 	player_props.bounding_shape = glm::vec3(.2f, 1.f, .2f);
+	player_props.mass = .01f;
 	player_object = engine::game_object::create(player_props);
 	player_object->set_angular_factor_lock(true);
 
@@ -83,13 +84,11 @@ void player::on_render(engine::ref<engine::shader> shader){
 	player_hitbox.on_render(2.5f, 0.f, 0.f, shader);
 	if (interaction_box_active) { interaction_hitbox.on_render(2.5f, 0.f, 0.f, shader); };
 
-
-	
 	m_tricube_material->submit(shader);
 	engine::renderer::submit(shader, player_object);
 
-	glm::vec3 pos = player_object->position();
-	pos.y += .5f;
+	glm::vec3 pos = player_camera.position();
+	//pos.y += .5f;
 	glm::vec3 forward = player_camera.front_vector();
 	glm::vec3 right = player_camera.right_vector();
 
@@ -120,6 +119,7 @@ void player::on_update(const engine::timestep& time_step){
 	
 
 	time_since_last_shot += 1.f * time_step;
+	time_since_last_jump += 1.f * time_step;
 
 	for (int i = 0; i < active_projectiles.size(); i++) {
 		active_projectiles.at(i)->on_update(time_step);
@@ -145,6 +145,12 @@ void player::on_update(const engine::timestep& time_step){
 	/// 
 	/// MOVEMENT
 	/// 
+	if(up_speed >= 0){
+		up_speed += gravity * time_step;
+	}
+
+	
+	//player_object->set_up(player_object->up() + (gravity * time_step));
 
 	if (engine::input::key_pressed(engine::key_codes::KEY_A)) // left 
 	{
@@ -152,6 +158,7 @@ void player::on_update(const engine::timestep& time_step){
 
 		glm::vec3 new_pos = player_object->position() - (movement_speed * time_step * sprint_speed * glm::normalize(glm::vec3(player_camera.right_vector().x, 0, player_camera.right_vector().z)));
 		player_object->set_position(new_pos);
+		ld = lastdirection::left;
 	}
 	//	move(e_direction::left, time_step);
 	else if (engine::input::key_pressed(engine::key_codes::KEY_D)) // right 
@@ -160,14 +167,17 @@ void player::on_update(const engine::timestep& time_step){
 		player_object->set_velocity(movement_speed * sprint_speed * glm::normalize(glm::vec3(player_camera.right_vector().x, 0, player_camera.right_vector().z)));
 		glm::vec3 new_pos = player_object->position() + (movement_speed * time_step * sprint_speed * glm::normalize(glm::vec3(player_camera.right_vector().x, 0, player_camera.right_vector().z)));
 		player_object->set_position(new_pos);
+		ld = lastdirection::right;
+
 	}
 
-	if (engine::input::key_pressed(engine::key_codes::KEY_S)) // down 
+	 if (engine::input::key_pressed(engine::key_codes::KEY_S)) // down 
 		//move(e_direction::backward, time_step);
 	{
 		player_object->set_velocity(-(movement_speed *glm::normalize(glm::vec3(player_camera.front_vector().x, 0, player_camera.front_vector().z))));
 		glm::vec3 new_pos = player_object->position() - (movement_speed * time_step * glm::normalize(glm::vec3(player_camera.front_vector().x, 0, player_camera.front_vector().z)));
 		player_object->set_position(new_pos);
+		ld = lastdirection::back;
 
 	}
 	else if (engine::input::key_pressed(engine::key_codes::KEY_W)) // up 
@@ -176,8 +186,28 @@ void player::on_update(const engine::timestep& time_step){
 		player_object->set_velocity(movement_speed * glm::normalize(glm::vec3(player_camera.front_vector().x, 0, player_camera.front_vector().z)));
 		glm::vec3 new_pos = player_object->position() + (movement_speed * time_step * glm::normalize(glm::vec3(player_camera.front_vector().x, 0, player_camera.front_vector().z)));
 		player_object->set_position(new_pos);
+		ld = lastdirection::foward;
+
 	}
 
+
+
+	/*
+	else if (engine::input::key_pressed(engine::key_codes::KEY_SPACE)) {
+		//player_object->set_velocity(movement_speed*100.f* glm::normalize(glm::vec3(0.f, player_camera.up_vector().y,0.f)));
+		if (time_since_last_jump > 1.5f) {
+			up_speed = .8f;
+			time_since_last_jump = 0;
+		}
+	
+	}
+
+	player_object->set_velocity(player_object->velocity() + (player_object->up() * up_speed));
+
+	*/
+
+
+	
 	///
 	/// DELETE LATER
 	///
@@ -208,9 +238,8 @@ void player::on_update(const engine::timestep& time_step){
 
 
 	
-	glm::vec3 current_pos = player_object->position();
 
-	//player_object->set_position(glm::vec3(current_pos.x, , current_pos.z))
+	/*
 	if (player_object->position().y > standing_height) { player_object->set_position(glm::vec3(current_pos.x, standing_height, current_pos.z)); }
 	else if (player_object->position().y < crouching_height) { player_object->set_position(glm::vec3(current_pos.x, crouching_height, current_pos.z)); }
 
@@ -226,7 +255,7 @@ void player::on_update(const engine::timestep& time_step){
 		}
 	}
 
-
+	*/
 	if (!sprinting) {
 		if (sprint_speed > min_sprint_speed) {
 			sprint_speed -= (sprint_step * (sprint_mulitplayer * sprint_mulitplayer)) * time_step;
@@ -245,12 +274,28 @@ void player::on_update(const engine::timestep& time_step){
 
 }
 
-void player::update_player_data(glm::vec3 new_position){
-	player_camera.set_position(new_position);
-}
 
 void player::update_camera() {
 	glm::vec3 current = player_object->position();
 	glm::vec3 new_pos = glm::vec3(current.x, current.y + .5f, current.z);
 	player_camera.set_position(new_pos);
+}
+
+glm::vec3 player::get_future_position(float seconds_in_future) {
+	glm::vec3 position = player_object->position();
+	if (ld == lastdirection::foward) {
+		position += (movement_speed * glm::normalize(glm::vec3(player_camera.front_vector().x, 0, player_camera.front_vector().z))) * seconds_in_future; 
+	}
+	else if (ld == lastdirection::back) {
+		position += -(movement_speed * glm::normalize(glm::vec3(player_camera.front_vector().x, 0, player_camera.front_vector().z))) * seconds_in_future; 
+	}
+	else if (ld == lastdirection::left) {
+		position += -(movement_speed * sprint_speed * glm::normalize(glm::vec3(player_camera.right_vector().x, 0, player_camera.right_vector().z)))*seconds_in_future;
+	}
+	else if (ld == lastdirection::right) {
+		position += (movement_speed * sprint_speed * glm::normalize(glm::vec3(player_camera.right_vector().x, 0, player_camera.right_vector().z)))* seconds_in_future;
+	}
+
+	return position;
+
 }

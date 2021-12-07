@@ -28,18 +28,6 @@ private:
 	engine::ref<engine::game_object>	m_terrain{};
 	engine::ref<engine::game_object>	m_menu_background{};
 
-	engine::ref<engine::game_object>	m_tree{};
-
-
-	engine::ref<engine::game_object>	m_claw{};
-
-	engine::ref<engine::game_object>	m_turret{};
-	engine::ref<engine::game_object>	m_tricube{};
-	engine::ref<engine::game_object>	m_tricube2{};
-
-	engine::ref<engine::game_object>	m_tetrahedron{};
-
-
 
 
 	engine::ref<engine::material>		m_material{};
@@ -59,7 +47,6 @@ private:
 	engine::ref<shell_camera>		m_shell_camera{};
 	engine::ref<menu_handler>		m_menu_handler{};
 	engine::ref<game_manager>		m_game_manager{}; 
-	std::vector<engine::ref<energy_trap_rays>>		m_energy_bolts{};
 	//Testing
 	
 };

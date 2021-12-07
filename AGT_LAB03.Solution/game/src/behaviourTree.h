@@ -10,6 +10,7 @@
 #include <ctime>
 #include <algorithm>
 #include <random>
+#include "game_enums.h"
 
 class BehaviourTree {  // Note:  A proper copy constructor and assignment operator should be defined, since the implicit ones use shallow copies only.
 public:
@@ -84,17 +85,15 @@ public:
 
 class Action : public BehaviourTree::Node {
 private:
-	std::string name;
-	int probabilityOfSuccess;
+	game_enums::state state;
+	bool& outcome;
+	game_enums::state& last_state;
 public:
-	Action(const std::string newName, int prob) : name(newName), probabilityOfSuccess(prob) {}
+	Action(const game_enums::state newstate, bool& prob, game_enums::state& l_state) : state(newstate), outcome(prob), last_state(l_state) {}
 private:
 	virtual bool run() override {
-		if (std::rand() % 100 < probabilityOfSuccess) {
-			std::cout << name << " succeeded." << std::endl;
-			return true;
-		}
-		std::cout << name << " failed." << std::endl;
-		return false;
+		last_state = state;
+		return outcome;
 	}
 };
+
