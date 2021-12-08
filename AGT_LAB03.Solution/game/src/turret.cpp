@@ -42,10 +42,15 @@ turret::turret(glm::vec3 pos, float , engine::ref<player> targ):target(targ) {
 
 	engine::ref<engine::turret_shape> turret_shape = engine::turret_shape::create(turret_vertices);
 	engine::game_object_properties turret_props;
+
+	
+
+
 	turret_props.position = glm::vec3(pos.x,pos.y,pos.z);
 	turret_props.meshes = { turret_shape->mesh() };
 	turret_props.scale /= 8;
 	turret_props.rotation_amount = AI_DEG_TO_RAD(180);
+
 	
 	m_turret = engine::game_object::create(turret_props);
 
@@ -55,9 +60,14 @@ turret::turret(glm::vec3 pos, float , engine::ref<player> targ):target(targ) {
 	m_active_material = engine::material::create(1.0f, glm::vec3(.10f, 1.f, 0.07f),
 		glm::vec3(.10f, 1.f, 0.07f), glm::vec3(0.5f, 0.5f, 0.5f), 1.0f);
 
-	engine::ref<engine::cuboid> base_cube = engine::cuboid::create(glm::vec3(.25f, .3f, .25f), false);
+
+	std::vector<engine::ref<engine::texture_2d>> base_textures =
+	{ engine::texture_2d::create("assets/textures/metal.bmp ", false) };
+
+	engine::ref<engine::cuboid> base_cube = engine::cuboid::create(glm::vec3(.25f, .3f, .25f), false, false);
 	engine::game_object_properties base_props;
 	base_props.meshes = { base_cube->mesh() };
+	base_props.textures = base_textures; 
 	base_props.rotation_amount = AI_DEG_TO_RAD(270);
 	base_props.scale = glm::vec3(1.f);
 	base_props.position = glm::vec3(pos.x,pos.y-.2f,pos.z);
@@ -111,7 +121,6 @@ void turret::on_render(engine::ref<engine::shader> shader) {
 	else {
 		m_disabled_material->submit(shader);
 		glm::mat4 turret_transform(1.f);
-
 		turret_transform = glm::translate(turret_transform, m_turret->position());
 		turret_transform = glm::rotate(turret_transform, last_angle, glm::vec3(0.f, 1.f, 0.f));
 		turret_transform = glm::scale(turret_transform, m_turret->scale());

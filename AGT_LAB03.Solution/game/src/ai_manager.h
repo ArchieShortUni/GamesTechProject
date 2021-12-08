@@ -9,11 +9,11 @@
 
 class  ai_manager {
 public:
-	ai_manager(std::vector<engine::ref<engine::game_object>>& game_objects,engine::ref<player>& p, std::vector<engine::ref<beacon_switch>>& switches);
+	ai_manager(std::vector<engine::ref<engine::game_object>>& game_objects,engine::ref<player>& p, std::vector<engine::ref<beacon_switch>>& switches, engine::ref<engine::audio_manager>& audio);
 	~ai_manager() {}
 
-	static engine::ref<ai_manager> create(std::vector<engine::ref<engine::game_object>>& game_objects, engine::ref<player>& p, std::vector<engine::ref<beacon_switch>>& switches) {
-		return std::make_shared<ai_manager>(game_objects,p,switches);
+	static engine::ref<ai_manager> create(std::vector<engine::ref<engine::game_object>>& game_objects, engine::ref<player>& p, std::vector<engine::ref<beacon_switch>>& switches, engine::ref<engine::audio_manager>& audio) {
+		return std::make_shared<ai_manager>(game_objects,p,switches,audio);
 	}
 
 	void on_render(engine::ref<engine::shader> shader);
@@ -29,6 +29,7 @@ public:
 
 
 private:
+	engine::ref<engine::audio_manager>& m_audio_manager;
 	std::vector<engine::ref<beacon_switch>> level_switches;
 	std::vector<engine::ref<turret>> active_turrets{};
 	std::vector<engine::ref<enemy_ranged>> active_ranged_enemies{};

@@ -7,14 +7,15 @@
 #include "explosion.h"
 #include "enemy_ranged.h"
 #include "ai_manager.h"
+#include "pick_up.h"
 class quad;
 
 class game_manager {
 public:
-	game_manager(engine::perspective_camera& camera, float width, float height);
+	game_manager(engine::perspective_camera& camera, float width, float height, engine::ref<engine::audio_manager>& audio);
 	~game_manager() {};
 
-	static engine::ref<game_manager>create(engine::perspective_camera& camera, float width, float height);
+	static engine::ref<game_manager>create(engine::perspective_camera& camera, float width, float height, engine::ref<engine::audio_manager>& audio);
 
 	void initialise();
 
@@ -37,7 +38,8 @@ public:
 private:
 
 
-	 
+	engine::ref<engine::audio_manager>&  m_audio_manager;
+
 	engine::ref<engine::bullet_manager> m_physics_manager{};
 	engine::ref<ai_manager> m_ai_manager{};
 	std::vector<engine::ref<engine::game_object>>     m_game_objects{};
@@ -50,15 +52,18 @@ private:
 	engine::ref<progress_bar> beacon3_bar;
 	engine::ref<progress_bar> health_bar;
 
-	glm::vec3 bcolour1 = glm::vec3(.76f, .87f, .94f);
-	glm::vec3 bcolour2 = glm::vec3(.18f, .52f, .54f);
-	glm::vec3 bcolour3 = glm::vec3(.21f, .53f, .64f);
+	glm::vec3 bcolour1 = glm::vec3(1.f, 0, 0);
+	glm::vec3 bcolour2 = glm::vec3(0, 1.f, 0);
+	glm::vec3 bcolour3 = glm::vec3(0, 0, 1.f);
+
+	bool level_complete = false;
 
 	float level_complete_percent; 
 	float current_level_percent; 
 	engine::ref<engine::text_manager>	m_text_manager{};
 
-
+	std::vector<engine::ref<pickup>> level_pickups;
+	 
 	std::vector<engine::ref<beacon>> level_beacons;
 	std::vector<engine::ref<beacon_switch>>  level_switches;
 	engine::ref<engine::texture_2d> m_texture;
@@ -70,7 +75,7 @@ private:
 	glm::vec3 last_player_pos;
 	
 
-	float level_time = 0;
+	float level_time = 182;
 	//TESTING TO BE DELETED LATER
 
 	engine::ref<enemy_ranged> enemy; 

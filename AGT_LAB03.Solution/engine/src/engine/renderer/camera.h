@@ -120,7 +120,7 @@ namespace engine
         perspective_camera( 
             float width, float height,  
             float fov = 45.f,  
-            float near_z = 0.1f, float far_z = 200.f);
+            float near_z = 0.1f, float far_z = 500.f);
         //Height things
         bool crouched = false; 
         float crouch_step = 2.0f;
@@ -229,7 +229,7 @@ namespace engine
         /// \brief Near clipping plane. 
         float m_near_plane = 0.1f; 
         /// \brief ar clipping plane. 
-        float m_far_plane = 100.f;
+        float m_far_plane = 500.f;
         //
         float m_width;
 

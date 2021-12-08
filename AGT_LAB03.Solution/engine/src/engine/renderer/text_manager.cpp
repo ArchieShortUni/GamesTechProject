@@ -18,7 +18,7 @@ void engine::text_manager::init()
 		LOG_CORE_ERROR("[text] Could not init FreeType Library");
 
 	FT_Face face;
-	if (FT_New_Face(ft, "assets/fonts/arial.ttf", 0, &face))
+	if (FT_New_Face(ft, "assets/fonts/game_font.ttf", 0, &face))
 		LOG_CORE_ERROR("[text] Failed to load font 'arial.ttf'");
 	else
 	{

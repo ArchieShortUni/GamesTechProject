@@ -12,11 +12,11 @@
 class player {
 public:
 
-	player(engine::perspective_camera& camera, std::vector<engine::ref<engine::game_object>>& game_objs);
+	player(engine::perspective_camera& camera, std::vector<engine::ref<engine::game_object>>& game_objs, engine::ref<engine::audio_manager>& audio);
 	~player(){}
 
-	static engine::ref<player> create(engine::perspective_camera& camera, std::vector<engine::ref<engine::game_object>>& game_objs) {
-		return std::make_shared<player>(camera, game_objs);
+	static engine::ref<player> create(engine::perspective_camera& camera, std::vector<engine::ref<engine::game_object>>& game_objs, engine::ref<engine::audio_manager>& audio) {
+		return std::make_shared<player>(camera, game_objs,audio);
 	}
 
 	//void initialise(engine::perspective_camera& camera);
@@ -55,6 +55,14 @@ public:
 
 	void start_sprint() {sprinting = true;}
 	void end_sprint() {sprinting = false;}
+
+	void increase_health(float healing) {
+		health += healing;
+		if (health >= 100) {
+			health = 100;
+		}
+	}
+
 	void reduce_health(float damage) {
 		health -= damage;
 		if (health <= 0) {
@@ -72,6 +80,9 @@ public:
 	engine::perspective_camera& get_camera() { return player_camera; }
 
 private:
+
+	engine::ref<engine::audio_manager>&  m_audio_manager;
+
 	glm::vec3 player_pos;
 	engine::bounding_box player_hitbox;
 	engine::bounding_box interaction_hitbox; 

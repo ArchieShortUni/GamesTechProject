@@ -93,10 +93,10 @@ engine::tricube::tricube(std::vector<glm::vec3> vertices) : m_vertices(vertices)
 		{vertices.at(10),	normals.at(9),	{0.f,1.f}}, //35
 
 		//BE
-		{vertices.at(15),	normals.at(10),	{0.f,0.f}}, //36
-		{vertices.at(14),	normals.at(10),	{1.f,0.f}}, //37
-		{vertices.at(10),	normals.at(10),	{1.f,1.f}}, //38
-		{vertices.at(11),	normals.at(10),	{0.f,1.f}}, //39
+		{vertices.at(15),	normals.at(12),	{0.f,0.f}}, //36
+		{vertices.at(14),	normals.at(12),	{1.f,0.f}}, //37
+		{vertices.at(10),	normals.at(12),	{1.f,1.f}}, //38
+		{vertices.at(11),	normals.at(12),	{0.f,1.f}}, //39
 
 		//BS
 		{vertices.at(16),	normals.at(11),	{0.f,0.f}}, //40

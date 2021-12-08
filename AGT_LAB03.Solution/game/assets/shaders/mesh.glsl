@@ -80,7 +80,7 @@ struct Material {
 	float transparency;
 }; 
 
-const int MAX_POINT_LIGHTS = 2;
+const int MAX_POINT_LIGHTS = 3;
 const int MAX_SPOT_LIGHTS = 2;
 
 in vec2 v_tex_coord;

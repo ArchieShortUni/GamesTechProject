@@ -1380,6 +1380,9 @@
     <ClInclude Include="src\engine\entities\shapes\turret_shape.h">
       <Filter>src\engine\entities\shapes</Filter>
     </ClInclude>
+    <ClInclude Include="src\engine\entities\shapes\pickup_shape.h">
+      <Filter>src\engine\entities\shapes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\engine\core\application.cpp">
@@ -1521,6 +1524,9 @@
       <Filter>src\engine\entities</Filter>
     </ClCompile>
     <ClCompile Include="src\engine\entities\shapes\turret_shape.cpp">
+      <Filter>src\engine\entities\shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\entities\shapes\pickup_shape.cpp">
       <Filter>src\engine\entities\shapes</Filter>
     </ClCompile>
   </ItemGroup>

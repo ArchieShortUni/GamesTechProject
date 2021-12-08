@@ -144,6 +144,7 @@
     <ClInclude Include="src\game_manager.h" />
     <ClInclude Include="src\menu_enemy.h" />
     <ClInclude Include="src\menu_handler.h" />
+    <ClInclude Include="src\pick_up.h" />
     <ClInclude Include="src\player.h" />
     <ClInclude Include="src\progress_bar.h" />
     <ClInclude Include="src\projectile.h" />

@@ -21,7 +21,7 @@ namespace engine
                      uint32_t height = 720,
 					 uint32_t pos_x = 0,
 					 uint32_t pos_y = 0)
-            : m_title(title), m_width(width), m_height(height), m_pos_x(pos_x), m_pos_y(pos_y), m_fullscreen(false), m_vsync(false)
+            : m_title(title), m_width(width), m_height(height), m_pos_x(pos_x), m_pos_y(pos_y), m_fullscreen(true), m_vsync(false)
         {
         }
     };

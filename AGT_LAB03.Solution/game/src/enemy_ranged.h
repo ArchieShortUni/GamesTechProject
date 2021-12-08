@@ -52,13 +52,11 @@ public:
 
 	void generate_patrol_point(float radius, float min_range);
 
-	void unstuck();
 
 	void run_behaviour_tree() {
 		behaviorTree.run();
 	}
 
-	
 private:
 	bool shotgun = false;
 	float health = 100;

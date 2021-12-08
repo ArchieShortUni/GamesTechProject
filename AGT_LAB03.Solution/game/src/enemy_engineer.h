@@ -15,11 +15,11 @@ class enemy_engineer {
 
 
 public:
-	enemy_engineer(glm::vec3 pos, float h, engine::ref<player> targ, std::vector<engine::ref<beacon_switch>>& switches, std::vector<engine::ref<turret>>& all_turrets);
+	enemy_engineer(glm::vec3 pos, float h, engine::ref<player> targ, std::vector<engine::ref<beacon_switch>>& switches, std::vector<engine::ref<turret>>& all_turrets, engine::ref<engine::audio_manager>& audio);
 	~enemy_engineer() {};
 
-	static engine::ref<enemy_engineer> create(glm::vec3 pos, float h, engine::ref<player> targ, std::vector<engine::ref<beacon_switch>>& switches, std::vector<engine::ref<turret>>& all_turrets) {
-		return std::make_shared<enemy_engineer>(pos, h, targ,switches,all_turrets);
+	static engine::ref<enemy_engineer> create(glm::vec3 pos, float h, engine::ref<player> targ, std::vector<engine::ref<beacon_switch>>& switches, std::vector<engine::ref<turret>>& all_turrets, engine::ref<engine::audio_manager>& audio) {
+		return std::make_shared<enemy_engineer>(pos, h, targ,switches,all_turrets,audio);
 	}
 
 	void on_render(engine::ref<engine::shader> shader);
@@ -71,7 +71,7 @@ private:
 	engine::game_object_properties bl_props{};
 
 	engine::game_object_properties enemy_props{};
-
+	engine::ref<engine::audio_manager>& m_audio_manager;
 
 	engine::ref<engine::game_object> m_enemy{};
 

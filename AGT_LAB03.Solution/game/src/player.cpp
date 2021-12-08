@@ -4,13 +4,13 @@
 #include "engine/key_codes.h"
 
 
-player::player(engine::perspective_camera& camera, std::vector<engine::ref<engine::game_object>>& game_objs):player_camera(camera),m_game_objects(game_objs) {
+player::player(engine::perspective_camera& camera, std::vector<engine::ref<engine::game_object>>& game_objs, engine::ref<engine::audio_manager>& audio):player_camera(camera),m_game_objects(game_objs),m_audio_manager(audio) {
 	
 }
 
 
 void player::initialise(float width, float height) {
-	engine::ref<engine::cuboid> cube = engine::cuboid::create(glm::vec3(.1f,.1f,.1f), false);
+	engine::ref<engine::cuboid> cube = engine::cuboid::create(glm::vec3(.1f,.1f,.1f), false,false);
 	engine::game_object_properties player_props;
 	player_props.meshes = { cube->mesh() };
 	player_props.scale = glm::vec3(1.f);
@@ -18,7 +18,7 @@ void player::initialise(float width, float height) {
 	player_props.rotation_axis = glm::vec3(0.f, 1.f, 0.f);
 	player_props.type = 0;
 	player_props.bounding_shape = glm::vec3(.2f, 1.f, .2f);
-	player_props.mass = .01f;
+	player_props.mass = .0001f;
 	player_object = engine::game_object::create(player_props);
 	player_object->set_angular_factor_lock(true);
 
@@ -157,7 +157,7 @@ void player::on_update(const engine::timestep& time_step){
 		player_object->set_velocity(-(movement_speed * sprint_speed * glm::normalize(glm::vec3(player_camera.right_vector().x, 0, player_camera.right_vector().z))));
 
 		glm::vec3 new_pos = player_object->position() - (movement_speed * time_step * sprint_speed * glm::normalize(glm::vec3(player_camera.right_vector().x, 0, player_camera.right_vector().z)));
-		player_object->set_position(new_pos);
+		//player_object->set_position(new_pos);
 		ld = lastdirection::left;
 	}
 	//	move(e_direction::left, time_step);
@@ -166,7 +166,7 @@ void player::on_update(const engine::timestep& time_step){
 	{
 		player_object->set_velocity(movement_speed * sprint_speed * glm::normalize(glm::vec3(player_camera.right_vector().x, 0, player_camera.right_vector().z)));
 		glm::vec3 new_pos = player_object->position() + (movement_speed * time_step * sprint_speed * glm::normalize(glm::vec3(player_camera.right_vector().x, 0, player_camera.right_vector().z)));
-		player_object->set_position(new_pos);
+		//player_object->set_position(new_pos);
 		ld = lastdirection::right;
 
 	}
@@ -176,7 +176,7 @@ void player::on_update(const engine::timestep& time_step){
 	{
 		player_object->set_velocity(-(movement_speed *glm::normalize(glm::vec3(player_camera.front_vector().x, 0, player_camera.front_vector().z))));
 		glm::vec3 new_pos = player_object->position() - (movement_speed * time_step * glm::normalize(glm::vec3(player_camera.front_vector().x, 0, player_camera.front_vector().z)));
-		player_object->set_position(new_pos);
+		//player_object->set_position(new_pos);
 		ld = lastdirection::back;
 
 	}
@@ -185,7 +185,7 @@ void player::on_update(const engine::timestep& time_step){
 	{
 		player_object->set_velocity(movement_speed * glm::normalize(glm::vec3(player_camera.front_vector().x, 0, player_camera.front_vector().z)));
 		glm::vec3 new_pos = player_object->position() + (movement_speed * time_step * glm::normalize(glm::vec3(player_camera.front_vector().x, 0, player_camera.front_vector().z)));
-		player_object->set_position(new_pos);
+		//player_object->set_position(new_pos);
 		ld = lastdirection::foward;
 
 	}
@@ -221,11 +221,15 @@ void player::on_update(const engine::timestep& time_step){
 	//SHOOTING
 	if (engine::input::mouse_button_pressed(0)) {
 		if (time_since_last_shot > .5f) {
+
 			glm::vec3 pos = player_camera.position();
 			glm::vec3 forward = player_camera.front_vector();
 			glm::vec3 right = player_camera.right_vector();
 			glm::vec3 p = pos + 0.9f * forward + 0.4f * right;
 			p.y -= .1f;
+
+			m_audio_manager->play_spatialised_sound("gun_shot", player_camera.position(), p);
+			m_audio_manager->volume("gun_shot", 0.002f);
 
 			engine::ref<projectile> bullet = projectile::create(bl_props, 0);
 			active_projectiles.push_back(bullet);

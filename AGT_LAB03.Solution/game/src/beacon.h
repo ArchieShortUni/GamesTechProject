@@ -7,19 +7,43 @@ class beacon_switch {
 public:
 	beacon_switch( glm::vec3 colour) {
 		base_colour = colour;
-		engine::ref<engine::cuboid> sw_cube = engine::cuboid::create(glm::vec3(.4f, .4f, .4f), false);
-		sw_props.meshes = { sw_cube->mesh() };
-		sw_props.rotation_amount = AI_DEG_TO_RAD(270);
-		sw_props.scale = glm::vec3(1.f);
-		sw_props.position = glm::vec3(0.f, -2.f, 0.f);
-		sw_props.bounding_shape = glm::vec3(1.f, 1.f, 1.f);
+
+		std::vector<glm::vec3> tricube_vertices;
+		//Rectange Vertices
+		tricube_vertices.push_back(glm::vec3(-5.f, 8.f, 5.f)); //0
+		tricube_vertices.push_back(glm::vec3(5.f, 8.f, 5.f)); //1
+		tricube_vertices.push_back(glm::vec3(5.f, 8.f, -5.f)); //2
+		tricube_vertices.push_back(glm::vec3(-5.f, 8.f, -5.f)); //3
+		tricube_vertices.push_back(glm::vec3(-5.f, 10.f, 5.f)); //4
+		tricube_vertices.push_back(glm::vec3(5.f, 10.f, 5.f)); //5
+		tricube_vertices.push_back(glm::vec3(5.f, 10.f, -5.f)); //6
+		tricube_vertices.push_back(glm::vec3(-5.f, 10.f, -5.f)); //7
+		//Triangle Tip
+		tricube_vertices.push_back(glm::vec3(0.f, 23.f, 0.f)); //8
+		//Base vertices
+		tricube_vertices.push_back(glm::vec3(-1.f, 8.f, 1.f)); //9
+		tricube_vertices.push_back(glm::vec3(1.f, 8.f, 1.f)); //10
+		tricube_vertices.push_back(glm::vec3(1.f, 8.f, -1.f)); //11
+		tricube_vertices.push_back(glm::vec3(-1.f, 8.f, -1.f)); //12
+		tricube_vertices.push_back(glm::vec3(-1.f, 0.f, 1.f)); //13
+		tricube_vertices.push_back(glm::vec3(1.f, 0.f, 1.f)); //14
+		tricube_vertices.push_back(glm::vec3(1.f, 0.f, -1.f)); //15
+		tricube_vertices.push_back(glm::vec3(-1.f, 0.f, -1.f)); //16
+
+		engine::ref<engine::tricube> tricube_shape = engine::tricube::create(tricube_vertices);
+
+		//engine::ref<engine::cuboid> sw_cube = engine::cuboid::create(glm::vec3(.4f, .4f, .4f), false);
+		sw_props.meshes = { tricube_shape->mesh() };
+		sw_props.scale /= 15;
+		sw_props.position = glm::vec3(0.f, 1.f, 0.f);
+		sw_props.bounding_shape = glm::vec3(1.f,1.2f, 1.f);
 		sw_props.type = 0;
 		sw_props.mass = 100000;
 
-		switch_box.set_box(sw_props.bounding_shape.x * sw_props.scale.x,
-			sw_props.bounding_shape.y * sw_props.scale.x,
-			sw_props.bounding_shape.z * sw_props.scale.x,
-			sw_props.position);
+		switch_box.set_box(sw_props.bounding_shape.x,
+			sw_props.bounding_shape.y,
+			sw_props.bounding_shape.z,
+			glm::vec3(sw_props.position.x, sw_props.position.y - .3f , sw_props.position.x));
 
 		switch_obj = engine::game_object::create(sw_props);
 
@@ -46,8 +70,12 @@ public:
 		switch_box.on_render(2.5f, 0.f, 0.f, shader);
 	}
 
+	void on_update() {
+		switch_box.on_update(switch_obj->position(), switch_obj->rotation_amount(), switch_obj->rotation_axis());
+	}
+
 	void set_position(glm::vec3 position) { switch_obj->set_position(position);
-	switch_box.on_update(glm::vec3(position.x, position.y - .5f, position.z),switch_obj->rotation_amount(), switch_obj->rotation_axis());
+	switch_box.on_update(glm::vec3(position.x, position.y, position.z), switch_obj->rotation_amount(), switch_obj->rotation_axis());
 	}
 
 	glm::vec3 get_position() { return switch_obj->position(); }
@@ -76,10 +104,10 @@ private:
 
 class beacon {
 public:
-	beacon(glm::vec3 colour,glm::vec3 position, int switch_num, float switch_radius,int switches_to_activate,float b_speed);
+	beacon(glm::vec3 colour,glm::vec3 position, int switch_num, float switch_radius,int switches_to_activate,float b_speed,int light_number);
 	~beacon();
 
-	static engine::ref<beacon> create(glm::vec3 colour,glm::vec3 position, int switch_num, float switch_radius, int switches_to_activate, float b_speed);
+	static engine::ref<beacon> create(glm::vec3 colour,glm::vec3 position, int switch_num, float switch_radius, int switches_to_activate, float b_speed, int light_number);
 	void on_render(engine::ref<engine::shader> shader);
 	void on_update(const engine::timestep& time_step);
 
@@ -97,7 +125,9 @@ public:
 
 	std::vector<engine::ref<beacon_switch>>& get_switches() { return switches; }
 
-
+	void beam_speed_boost() {
+		beam_speed += .5f;
+	}
 
 private:
 	bool beacon_active = true;
@@ -118,6 +148,12 @@ private:
 	engine::ref<engine::material> m_material;
 	engine::ref<engine::cuboid> m_cube;
 	engine::ref<engine::game_object> m_beacon{};
+
+	//Lighting
+	engine::PointLight m_pointLight;
+	uint32_t num_point_lights = 3;
+	engine::ref<engine::material>		m_lightsource_material{};
+	int light_int;
 
 	//Temporarily using cubes for the switches, swap to primitive or mesh object later
 	std::vector<engine::ref<beacon_switch>> switches;

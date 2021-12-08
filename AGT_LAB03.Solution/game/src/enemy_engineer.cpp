@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "enemy_engineer.h"
 
-enemy_engineer::enemy_engineer(glm::vec3 pos, float h, engine::ref<player> targ, std::vector<engine::ref<beacon_switch>>& switches, std::vector<engine::ref<turret>>& all_turrets) :target(targ), level_switches(switches),active_turrets(all_turrets) {
+enemy_engineer::enemy_engineer(glm::vec3 pos, float h, engine::ref<player> targ, std::vector<engine::ref<beacon_switch>>& switches, std::vector<engine::ref<turret>>& all_turrets, engine::ref<engine::audio_manager>& audio) :target(targ), level_switches(switches),active_turrets(all_turrets),m_audio_manager(audio) {
 	engine::ref<engine::model> crab_model = engine::model::create("assets/models/static/crab_engineer.obj");
 	health = h;
 	enemy_props.meshes = crab_model->meshes();
@@ -20,12 +20,6 @@ enemy_engineer::enemy_engineer(glm::vec3 pos, float h, engine::ref<player> targ,
 	hitbox.set_box(enemy_props.bounding_shape.x+.7f, enemy_props.bounding_shape.y + .4f, enemy_props.bounding_shape.z+.7f, m_enemy->position());
 
 	//Behaviour Tree Setup
-
-	/*behaviorTree.setRootChild(&selector[0]);
-	selector[0].addChildren({ &sequence[0],&patrol_action });
-	sequence[0].addChildren({ &targetInSight,&selector[1] });
-	selector[1].addChildren({ &sequence[1],&approach_switch_action });
-	sequence[1].addChildren({ &targetInRange,&shoot_action });*/
 
 	behaviorTree.setRootChild(&selector[0]);
 	selector[0].addChildren({ &sequence[0],&selector[5] });
@@ -341,7 +335,8 @@ void enemy_engineer::place_turret(glm::vec3 pos) {
 	engine::ref<turret> t = turret::create(pos, 100, target);
 	active_turrets.emplace_back(t);
 	turret_not_placed = false;
-	std::cout << "PLACING TURRET";
+
+	m_audio_manager->play_spatialised_sound("turret_placed", target->get_camera().position(), pos);
 }
 
 void enemy_engineer::flee() {

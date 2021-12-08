@@ -12,10 +12,18 @@ m_3d_camera((float)engine::application::window().width(), (float)engine::applica
 
 	engine::application::window().hide_mouse_cursor();
 
+
 	m_audio_manager = engine::audio_manager::instance();
 	m_audio_manager->init();
-	m_audio_manager->load_sound("assets/audio/The Mole OST - 13 The Execution.mp3", engine::sound_type::track, "menuMusic");  // Royalty free music from http://www.nosoapradio.us/
-	//m_audio_manager->play("menuMusic");
+	m_audio_manager->load_sound("assets/audio/menu_music.mp3", engine::sound_type::track, "menu_music");
+	m_audio_manager->load_sound("assets/audio/level_music2.mp3", engine::sound_type::track, "level_music");
+	m_audio_manager->load_sound("assets/audio/musket_shot.wav", engine::sound_type::spatialised, "gun_shot");
+	m_audio_manager->load_sound("assets/audio/pick_up.wav", engine::sound_type::spatialised, "pick_up");
+	m_audio_manager->load_sound("assets/audio/turret_click.mp3", engine::sound_type::spatialised, "turret_placed");
+	m_audio_manager->play("menu_music");
+	m_audio_manager->volume("menu_music", .05f);
+
+
 	//m_audio_manager->pause("music");
 	// Initialise the shaders, materials and lights
 	auto mesh_shader = engine::renderer::shaders_library()->get("mesh");
@@ -84,7 +92,7 @@ m_3d_camera((float)engine::application::window().width(), (float)engine::applica
 
 	m_menu_handler = menu_handler::create(1.6f, 0.9f,m_menu_background);
 
-	m_game_manager = game_manager::create(m_3d_camera, 1.6f, 0.9f);
+	m_game_manager = game_manager::create(m_3d_camera, 1.6f, 0.9f,m_audio_manager);
 
 
 	m_game_manager->add_to_game_objects(m_terrain);
@@ -137,7 +145,11 @@ void sb_mechanics_layer::on_render() {
 	// set up  shader. (renders textures and materials)
 	const auto mesh_shader = engine::renderer::shaders_library()->get("mesh");
 	engine::renderer::begin_scene(m_3d_camera, mesh_shader);
+
 	std::dynamic_pointer_cast<engine::gl_shader>(mesh_shader)->set_uniform("gEyeWorldPos", m_3d_camera.position());
+	std::dynamic_pointer_cast<engine::gl_shader>(mesh_shader)->set_uniform("lighting_on", true);
+
+
 
 	m_material->submit(mesh_shader);
 
@@ -149,26 +161,36 @@ void sb_mechanics_layer::on_render() {
 	}
 	engine::renderer::submit(mesh_shader, m_skybox, skybox_tranform);
 
-	if (on_menu) { engine::renderer::submit(mesh_shader, m_menu_background); }
+
+	if (on_menu) {
+		m_menu_handler->on_render3d(mesh_shader);
+		engine::renderer::submit(mesh_shader, m_menu_background);
+	}
 	else {
-	engine::renderer::submit(mesh_shader, m_terrain);
-	engine::renderer::submit(mesh_shader, m_h_terrain);
+		engine::renderer::submit(mesh_shader, m_terrain);
+		engine::renderer::submit(mesh_shader, m_h_terrain);
+		m_game_manager->on_render3d(mesh_shader);
+		m_shell_camera->on_render3d(mesh_shader);
+		
 	}
 
-	if (on_menu) { m_menu_handler->on_render3d(mesh_shader); }
-	else {
-		m_shell_camera->on_render3d(mesh_shader);
-		m_game_manager->on_render3d(mesh_shader);
-	}
+
+	
 	//engine::renderer::submit(mesh_shader, m_turret);
 	engine::renderer::end_scene();
 
 	//SHELL CAMERA SECTION 
 	engine::renderer::begin_scene(m_2d_camera, mesh_shader);
+	std::dynamic_pointer_cast<engine::gl_shader>(mesh_shader)->set_uniform("lighting_on", false);
+
 	if (on_menu) { m_menu_handler->on_render2d(mesh_shader); }
 	else {
-	m_shell_camera->on_render2d(mesh_shader);
-	m_game_manager->on_render2d(mesh_shader);}
+		m_shell_camera->on_render2d(mesh_shader);
+		m_game_manager->on_render2d(mesh_shader);
+	}
+
+	std::dynamic_pointer_cast<engine::gl_shader>(mesh_shader)->set_uniform("lighting_on", true);
+
 	engine::renderer::end_scene();
 }
 
@@ -219,7 +241,13 @@ void sb_mechanics_layer::on_event(engine::event& event)
 				m_3d_camera.swap_view();
 				m_game_manager->initialise();
 				on_menu = false;
-				m_menu_handler->swap();}}}
+				m_menu_handler->swap();
+
+				m_audio_manager->stop("menu_music");
+				m_audio_manager->play("level_music");
+				m_audio_manager->volume("level_music", .05f);
+
+			}}}
 
 
 	if (event.event_type() == engine::event_type_e::key_released) {

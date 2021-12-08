@@ -2,14 +2,14 @@
 #include "beacon.h"
 
 
-beacon::beacon(glm::vec3 colour,glm::vec3 position, int switch_num, float switch_radius, int switches_to_activate, float b_speed) {
+beacon::beacon(glm::vec3 colour,glm::vec3 position, int switch_num, float switch_radius, int switches_to_activate, float b_speed, int light_number) {
 	beacon_position = position;
 	sw_to_activate = switches_to_activate;
 	beam_speed = b_speed;
-
+	light_int = light_number;
 
 	engine::ref<engine::model> b_model = engine::model::create("assets/models/static/beacon.obj");
-	m_cube = engine::cuboid::create(glm::vec3(.08f*scale_factor, .3f * scale_factor, .08f * scale_factor), false);
+	m_cube = engine::cuboid::create(glm::vec3(.08f*scale_factor, .3f * scale_factor, .08f * scale_factor), false,false);
 	
 	b_props.meshes = b_model->meshes();
 	b_props.textures = b_model->textures();
@@ -23,7 +23,14 @@ beacon::beacon(glm::vec3 colour,glm::vec3 position, int switch_num, float switch
 	m_beacon = engine::game_object::create(b_props);
 
 	m_material = engine::material::create(0.0f, colour, colour, colour, 0.4f);
-	
+
+	m_pointLight.Color = colour;
+	m_pointLight.AmbientIntensity = 0.25f;
+	m_pointLight.DiffuseIntensity = 0.6f;
+	m_pointLight.Position = glm::vec3(beacon_position.x, beacon_position.y + 2.f, beacon_position.z);
+
+	m_lightsource_material = engine::material::create(1.0f, m_pointLight.Color,
+		m_pointLight.Color, m_pointLight.Color, 1.0f);
 
 	//Generate switch positions,
 	for (int i = 0; i < switch_num; i++) {
@@ -62,13 +69,19 @@ void beacon::new_switches_pos(float radius,float min_range) {
 		z *= radius; 
 
 		
-		switches.at(i)->set_position(glm::vec3(m_beacon->position().x+x, m_beacon->position().y+1.f, m_beacon->position().z+z));
+		switches.at(i)->set_position(glm::vec3(m_beacon->position().x+x, m_beacon->position().y+3.f, m_beacon->position().z+z));
 		//switches.at(i)->set_position(glm::vec3(m_beacon->position().x , m_beacon->position().y, m_beacon->position().z ));
 
 	}
 }
 
 void beacon::on_render(engine::ref<engine::shader> shader) {
+	if(light_int == 0){
+	std::dynamic_pointer_cast<engine::gl_shader>(shader)->
+		set_uniform("gNumPointLights", (int)num_point_lights);
+}
+	m_pointLight.submit(shader, light_int);
+
 	glm::mat4 beacon_transform(1.f);
 	beacon_transform = glm::translate(beacon_transform, m_beacon->position());
 	beacon_transform = glm::rotate(beacon_transform, m_beacon->rotation_amount(), m_beacon->rotation_axis());
@@ -78,13 +91,20 @@ void beacon::on_render(engine::ref<engine::shader> shader) {
 	for (int i = 0; i < switches.size(); i++) {
 		switches.at(i)->on_render(shader);
 	}
-	m_material->submit(shader);
+	//m_material->submit(shader);
+
+	m_lightsource_material->submit(shader);
+	std::dynamic_pointer_cast<engine::gl_shader>(shader)->
+		set_uniform("lighting_on", false);
+
 	glm::mat4 transform(1.0f);
 	transform = glm::translate(transform, beacon_position);
 	transform = glm::scale(transform, glm::vec3(1.f, current_beacon_height, 1.f));
 	transform = glm::rotate(transform, beam_rotation, glm::vec3(0.f, 1.f, 0.f));
 	engine::renderer::submit(shader, m_cube->mesh(), transform);
 
+	std::dynamic_pointer_cast<engine::gl_shader>(shader)->
+		set_uniform("lighting_on", true);
 }
 
 void beacon::on_update(const engine::timestep& time_step) {
@@ -117,6 +137,10 @@ void beacon::on_update(const engine::timestep& time_step) {
 	beam_rotation += (float)time_step;
 	percentage = (100 / (max_beacon_height)) * current_beacon_height;
 
+	for (int i = 0; i < switches.size(); i++) {
+		switches.at(i)->on_update();
+	}
+
 }
 
 void beacon::swap_state() {
@@ -124,7 +148,7 @@ void beacon::swap_state() {
 	else { beacon_active = true; }
 }
 
-engine::ref<beacon> beacon::create(glm::vec3 colour,glm::vec3 position, int switch_num, float switch_radius, int switches_to_activate, float b_speed)
+engine::ref<beacon> beacon::create(glm::vec3 colour,glm::vec3 position, int switch_num, float switch_radius, int switches_to_activate, float b_speed, int light_number)
 {
-	return std::make_shared<beacon>(colour,position, switch_num, switch_radius, switches_to_activate, b_speed);
+	return std::make_shared<beacon>(colour,position, switch_num, switch_radius, switches_to_activate, b_speed, light_number);
 }
