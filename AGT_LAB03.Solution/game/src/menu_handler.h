@@ -31,6 +31,11 @@ private:
 	std::vector<engine::ref<engine::game_object>> m_menuitems{};
 	std::vector<engine::bounding_box> m_boxes{};
 
+	engine::SpotLight					m_spotLight;
+	uint32_t							num_spot_lights = 1;
+
+	engine::PointLight m_pointLight;
+	uint32_t num_point_lights = 1;
 	engine::ref<engine::texture_2d> m_texture;
 	engine::ref<quad> m_quad;
 

@@ -4,6 +4,7 @@
 
 beacon::beacon(glm::vec3 colour,glm::vec3 position, int switch_num, float switch_radius, int switches_to_activate, float b_speed, int light_number) {
 	beacon_position = position;
+	beacon_position.y += 1.f;
 	sw_to_activate = switches_to_activate;
 	beam_speed = b_speed;
 	light_int = light_number;
@@ -16,9 +17,16 @@ beacon::beacon(glm::vec3 colour,glm::vec3 position, int switch_num, float switch
 	float b_scale = 3.f / glm::max(b_model->size().x, glm::max(b_model->size().y, b_model->size().z));
 	b_scale *=scale_factor;
 	b_props.position = beacon_position;
-	b_props.bounding_shape = b_model->size() / 2.f * b_scale;
+	b_props.bounding_shape = glm::vec3(.6f, .04f, .6f);
 	b_props.rotation_amount = AI_DEG_TO_RAD(270);
 	b_props.scale = glm::vec3(b_scale);
+	b_props.mass = 100.f;
+
+
+	beacon_box.set_box(b_props.bounding_shape.x,
+		b_props.bounding_shape.y,
+		b_props.bounding_shape.z,
+		glm::vec3(b_props.position.x, b_props.position.y - .3f, b_props.position.x));
 
 	m_beacon = engine::game_object::create(b_props);
 
@@ -82,6 +90,8 @@ void beacon::on_render(engine::ref<engine::shader> shader) {
 }
 	m_pointLight.submit(shader, light_int);
 
+	beacon_box.on_render(2.5f, .0f, .0f, shader);
+
 	glm::mat4 beacon_transform(1.f);
 	beacon_transform = glm::translate(beacon_transform, m_beacon->position());
 	beacon_transform = glm::rotate(beacon_transform, m_beacon->rotation_amount(), m_beacon->rotation_axis());
@@ -108,7 +118,7 @@ void beacon::on_render(engine::ref<engine::shader> shader) {
 }
 
 void beacon::on_update(const engine::timestep& time_step) {
-
+	beacon_box.on_update(m_beacon->position(), m_beacon->rotation_amount(), m_beacon->rotation_axis());
 	if (get_active_switches() < sw_to_activate && beacon_active) {
 		swap_state();
 	}

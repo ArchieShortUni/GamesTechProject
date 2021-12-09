@@ -115,6 +115,7 @@ public:
 	float get_height() { return current_beacon_height; }
 	float get_percent() { return floor((double)percentage + 0.5); }
 
+	engine::ref<engine::game_object>& get_object() { return m_beacon; }
 	void new_switches_pos(float range,float min_range);
 
 	int get_active_switches() {
@@ -124,6 +125,7 @@ public:
 	}
 
 	std::vector<engine::ref<beacon_switch>>& get_switches() { return switches; }
+
 
 	void beam_speed_boost() {
 		beam_speed += .5f;
@@ -148,6 +150,7 @@ private:
 	engine::ref<engine::material> m_material;
 	engine::ref<engine::cuboid> m_cube;
 	engine::ref<engine::game_object> m_beacon{};
+	engine::bounding_box	beacon_box;
 
 	//Lighting
 	engine::PointLight m_pointLight;

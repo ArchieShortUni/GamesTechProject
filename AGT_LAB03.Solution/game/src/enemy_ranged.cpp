@@ -51,8 +51,24 @@ void enemy_ranged::on_render(engine::ref<engine::shader> shader) {
 		hitbox.on_render(2.5f, .0f, .0f, shader);
 	}
 	glm::mat4 enemy_transform(1.f);
+
+	glm::vec3 v2 = glm::normalize(target->get_player_position() - m_enemy->position());
+	glm::vec3 side_vector = glm::cross(glm::vec3(0.f, 1.f, 0.f), v2);
+	glm::vec3 rotation_vector = -glm::cross(side_vector, v2);
+	float theta3 = atan2(v2.x, v2.z);
+
 	enemy_transform = glm::translate(enemy_transform, m_enemy->position());
-	enemy_transform = glm::rotate(enemy_transform, m_enemy->rotation_amount(), m_enemy->rotation_axis());
+
+	if (m_state == game_enums::state::approach || m_state == game_enums::state::shoot) {
+		enemy_transform = glm::rotate(enemy_transform, theta3 + AI_DEG_TO_RAD(-90), glm::vec3(0.f, 1.f, 0.f));
+
+	}
+	else {
+		enemy_transform = glm::rotate(enemy_transform, m_enemy->rotation_amount(), m_enemy->rotation_axis());
+
+	}
+
+
 	enemy_transform = glm::scale(enemy_transform, m_enemy->scale());
 
 	engine::renderer::submit(shader, enemy_transform, m_enemy);
@@ -75,7 +91,7 @@ void enemy_ranged::on_update(const engine::timestep& time_step) {
 		//Defining decision variables for behaviour Tree
 		if (glm::distance(target->get_player_position(), m_enemy->position()) < 20.f) {
 			player_in_sight = true;
-			if (glm::distance(target->get_player_position(), m_enemy->position()) < 7.f) {
+			if (glm::distance(target->get_player_position(), m_enemy->position()) < 15.f) {
 				player_in_range = true;
 			}
 			else { player_in_range = false; }
@@ -165,6 +181,9 @@ void enemy_ranged::on_update(const engine::timestep& time_step) {
 				active_projectiles.erase(active_projectiles.begin() + i);
 			}
 		}
+
+
+		
 	}
 }
 
@@ -236,6 +255,27 @@ void enemy_ranged::generate_patrol_point(float radius, float min_range) {
 
 void enemy_ranged::shoot() {
 
+	if(shotgun){
+		for (int i = 0; i < 5; i++) {
+			engine::ref<projectile> bullet = projectile::create(bl_props, 1);
+			active_projectiles.push_back(bullet);
+
+			glm::vec3 firing_pos = m_enemy->position();
+			firing_pos += (m_enemy->forward() / 4.f) - (m_enemy->right() / 1.5f);
+
+			glm::vec3 c = target->get_player_position();
+			c.y += .5;
+			glm::vec3 v = c - firing_pos;
+			v.y -= 1.f;
+
+			v.x += (((float)rand()) / RAND_MAX - .5f);
+			v.y += (((float)rand()) / RAND_MAX - .5f);
+			v.z += (((float)rand()) / RAND_MAX - .5f); 
+			//Randomise V 
+			bullet->fire(firing_pos, glm::normalize(v), 5.f);
+		}
+	}
+	else{
 		engine::ref<projectile> bullet = projectile::create(bl_props, 1);
 		active_projectiles.push_back(bullet);
 
@@ -248,6 +288,7 @@ void enemy_ranged::shoot() {
 		v.y -= 1.f;
 
 		bullet->fire(firing_pos, glm::normalize(v), 5.f);
+	}
 }
 
 void enemy_ranged::patrol(const engine::timestep& time_step) {
@@ -262,4 +303,7 @@ void enemy_ranged::approach(const engine::timestep& time_step) {
 	future_pos.y = m_enemy->position().y;
 	m_enemy->set_forward(glm::normalize(future_pos - m_enemy->position()));
 	m_enemy->set_velocity(m_enemy->forward() * movement_speed * glm::vec3(2.f));
+
+	
+
 }

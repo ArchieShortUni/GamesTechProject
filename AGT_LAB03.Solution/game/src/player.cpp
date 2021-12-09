@@ -61,6 +61,17 @@ void player::initialise(float width, float height) {
 	//CROSSHAIR
 	m_texture = engine::texture_2d::create("assets/textures/crosshair.bmp", true);
 	m_quad = quad::create(glm::vec2(width, height));
+
+	//Lighting
+	m_spotLight.Color = glm::vec3(1.0f, 1.0f, 1.0f);
+	m_spotLight.AmbientIntensity = 0.55f;
+	m_spotLight.DiffuseIntensity = 0.8f;
+	m_spotLight.Position = glm::vec3(-5.0f, 2.0f, 0.0f);
+	m_spotLight.Direction = glm::normalize(glm::vec3(1.0f, -1.0f, 0.0f));
+	m_spotLight.Cutoff = 0.0001f;
+	m_spotLight.Attenuation.Constant = 1.0f;
+	m_spotLight.Attenuation.Linear = 0.1f;
+	m_spotLight.Attenuation.Exp = 0.01f;
 }
 
 void player::on_render2d(engine::ref<engine::shader> shader) {
@@ -83,6 +94,10 @@ void player::on_render(engine::ref<engine::shader> shader){
 
 	player_hitbox.on_render(2.5f, 0.f, 0.f, shader);
 	if (interaction_box_active) { interaction_hitbox.on_render(2.5f, 0.f, 0.f, shader); };
+
+	std::dynamic_pointer_cast<engine::gl_shader>(shader)->
+		set_uniform("gNumSpotLights", (int)num_spot_lights);
+	m_spotLight.submit(shader, 0);
 
 	m_tricube_material->submit(shader);
 	engine::renderer::submit(shader, player_object);
@@ -117,6 +132,18 @@ void player::on_render(engine::ref<engine::shader> shader){
 
 void player::on_update(const engine::timestep& time_step){
 	
+	m_spotLight.Direction = glm::normalize(player_camera.front_vector());
+	glm::vec3 spotPos = player_camera.position();
+	glm::vec3 forward = player_camera.front_vector();
+	glm::vec3 right = player_camera.right_vector();
+	float theta = engine::PI / 2.0f - acos(forward.y);
+	float phi = atan2(forward.x, forward.z);
+
+	glm::vec3 p = spotPos - 0.2f * forward  - 0.1f * right;
+	p.y -= .2f;
+	m_spotLight.Position = p;
+
+
 
 	time_since_last_shot += 1.f * time_step;
 	time_since_last_jump += 1.f * time_step;

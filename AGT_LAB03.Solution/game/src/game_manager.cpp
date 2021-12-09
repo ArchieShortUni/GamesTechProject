@@ -32,6 +32,10 @@ void game_manager::initialise() {
 	engine::ref<beacon> m_beacon2 = beacon::create(bcolour2, beacon2_pos, 3, 25.0f, 3, 1.5f,1);
 	engine::ref<beacon> m_beacon3 = beacon::create(bcolour3, beacon3_pos, 3, 25.0f, 3, 1.f,2);
 
+	m_game_objects.push_back(m_beacon1->get_object());
+	m_game_objects.push_back(m_beacon2->get_object());
+	m_game_objects.push_back(m_beacon3->get_object());
+
 	level_beacons.push_back(m_beacon1);
 	level_beacons.push_back(m_beacon2);
 	level_beacons.push_back(m_beacon3);
@@ -65,7 +69,6 @@ void game_manager::initialise() {
 
 void game_manager::on_update(const engine::timestep& time_step) {
 		if (player->is_alive() && !level_complete) {
-
 
 			level_time -= 1 * time_step;
 			player->on_update(time_step);
@@ -147,6 +150,14 @@ void game_manager::on_update(const engine::timestep& time_step) {
 				}
 				timer_test = 0;
 			}
+
+			if (engine::input::key_pressed(engine::key_codes::KEY_4)) {
+				if (timer_test > .4f) {
+					m_ai_manager->add_enemy(game_enums::enemies::rangedShotgun, player->get_player_position() + (cam.front_vector() * glm::vec3(3.f)));
+				}
+				timer_test = 0;
+			}
+
 
 			if (engine::input::key_pressed(engine::key_codes::KEY_5)) {
 				if (timer_test > .4f) {

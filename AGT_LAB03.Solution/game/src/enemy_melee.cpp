@@ -35,8 +35,24 @@ void enemy_melee::on_render(engine::ref<engine::shader> shader) {
 		hitbox.on_render(2.5f, .0f, .0f, shader);
 	}
 	glm::mat4 enemy_transform(1.f);
+
+	glm::vec3 v2 = glm::normalize(target->get_player_position() - m_enemy->position());
+	glm::vec3 side_vector = glm::cross(glm::vec3(0.f, 1.f, 0.f), v2);
+	glm::vec3 rotation_vector = -glm::cross(side_vector, v2);
+	float theta3 = atan2(v2.x, v2.z);
+
 	enemy_transform = glm::translate(enemy_transform, m_enemy->position());
-	enemy_transform = glm::rotate(enemy_transform, m_enemy->rotation_amount(), m_enemy->rotation_axis());
+
+	if (m_state == game_enums::state::approach || m_state == game_enums::state::shoot) {
+		enemy_transform = glm::rotate(enemy_transform, theta3 + AI_DEG_TO_RAD(-90), glm::vec3(0.f, 1.f, 0.f));
+
+	}
+	else {
+		enemy_transform = glm::rotate(enemy_transform, m_enemy->rotation_amount(), m_enemy->rotation_axis());
+
+	}
+
+
 	enemy_transform = glm::scale(enemy_transform, m_enemy->scale());
 
 	engine::renderer::submit(shader, enemy_transform, m_enemy);
@@ -71,8 +87,6 @@ void enemy_melee::on_update(const engine::timestep& time_step) {
 		m_state = next_state;
 
 
-
-
 		if (time_alive > last_second) {
 			if ((m_state == game_enums::state::patrol || m_state == game_enums::state::approach) && (glm::distance(previous_position, m_enemy->position()) < .2f)) {
 				m_last_state = m_state;
@@ -83,9 +97,6 @@ void enemy_melee::on_update(const engine::timestep& time_step) {
 			previous_position = m_enemy->position();
 
 		}
-
-
-
 
 		//AI Things
 		if (m_state == game_enums::state::patrol) {

@@ -25,6 +25,7 @@ private:
 
 	bool on_menu = true;
 
+	engine::ref<engine::shader> mesh_shader; 
 	engine::ref<engine::skybox>			m_skybox{};
 	engine::ref<engine::game_object>	m_terrain{};
 	engine::ref<engine::game_object>	m_menu_background{};

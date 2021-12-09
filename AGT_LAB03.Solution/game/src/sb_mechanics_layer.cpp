@@ -26,7 +26,7 @@ m_3d_camera((float)engine::application::window().width(), (float)engine::applica
 
 	//m_audio_manager->pause("music");
 	// Initialise the shaders, materials and lights
-	auto mesh_shader = engine::renderer::shaders_library()->get("mesh");
+	 mesh_shader = engine::renderer::shaders_library()->get("mesh");
 	auto text_shader = engine::renderer::shaders_library()->get("text_2D");
 
 	m_directionalLight.Color = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -38,7 +38,6 @@ m_3d_camera((float)engine::application::window().width(), (float)engine::applica
 	std::dynamic_pointer_cast<engine::gl_shader>(mesh_shader)->bind();
 	std::dynamic_pointer_cast<engine::gl_shader>(mesh_shader)->set_uniform("lighting_on", true);
 	std::dynamic_pointer_cast<engine::gl_shader>(mesh_shader)->set_uniform("gColorMap", 0);
-	m_directionalLight.submit(mesh_shader);
 	std::dynamic_pointer_cast<engine::gl_shader>(mesh_shader)->set_uniform("gMatSpecularIntensity", 1.f);
 	std::dynamic_pointer_cast<engine::gl_shader>(mesh_shader)->set_uniform("gSpecularPower", 10.f);
 	std::dynamic_pointer_cast<engine::gl_shader>(mesh_shader)->set_uniform("transparency", 1.0f);
@@ -48,7 +47,7 @@ m_3d_camera((float)engine::application::window().width(), (float)engine::applica
 		glm::ortho(0.f, (float)engine::application::window().width(), 0.f,
 			(float)engine::application::window().height()));
 
-	m_skybox = engine::skybox::create(50.f,
+	m_skybox = engine::skybox::create(130.f,
 		{ engine::texture_2d::create("assets/textures/Simulation/tron_lf.bmp", true),
 		  engine::texture_2d::create("assets/textures/Simulation/tron_bk.bmp", true),
 		  engine::texture_2d::create("assets/textures/Simulation/tron_rt.bmp", true),
@@ -154,7 +153,7 @@ void sb_mechanics_layer::on_render() {
 	m_material->submit(mesh_shader);
 
 	glm::mat4 skybox_tranform(1.0f);
-	skybox_tranform = glm::translate(skybox_tranform, m_3d_camera.position());
+	skybox_tranform = glm::translate(skybox_tranform,glm::vec3( m_3d_camera.position().x, m_3d_camera.position().y -40.f, m_3d_camera.position().z));
 	for (const auto& texture : m_skybox->textures())
 	{
 		texture->bind();
@@ -246,6 +245,8 @@ void sb_mechanics_layer::on_event(engine::event& event)
 				m_audio_manager->stop("menu_music");
 				m_audio_manager->play("level_music");
 				m_audio_manager->volume("level_music", .05f);
+				
+			
 
 			}}}
 

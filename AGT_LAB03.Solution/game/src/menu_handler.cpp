@@ -5,7 +5,16 @@
 menu_handler::menu_handler(float width, float height, engine::ref<engine::game_object>& bg): m_back_terrain(bg) {
 	m_texture = engine::texture_2d::create("assets/textures/menu_controls.bmp", true);
 	m_quad = quad::create(glm::vec2(width, height));
-	
+
+
+	m_pointLight.Color = glm::vec3(1.0f, 1.0f, 1.0f);
+	m_pointLight.AmbientIntensity = 1.f;
+	m_pointLight.DiffuseIntensity = 1.f;
+	m_pointLight.Position = glm::vec3(0.f, 10.f, 0.f);
+	m_pointLight.Attenuation.Constant = 1.0f;
+	m_pointLight.Attenuation.Linear = 0.1f;
+	m_pointLight.Attenuation.Exp = 0.001f;
+
 	//TextForMenu
 	std::vector<std::string> letterstoprow = { "C.obj","O.obj","V.obj","E.obj","R.obj","T.obj","C.obj","R.obj","A.obj","B.obj" };
 	//std::vector<std::string> letterstoprow = { "C.obj","O.obj" };
@@ -66,6 +75,11 @@ void menu_handler::on_render3d(engine::ref<engine::shader> shader) {
 
 	if (!menu_active)
 		return;
+
+	std::dynamic_pointer_cast<engine::gl_shader>(shader)->
+		set_uniform("gNumPointLights", (int)num_point_lights);
+
+	m_pointLight.submit(shader, 0);
 
 	for (int i = 0; i < m_boxes.size(); i++) {
 		//m_boxes.at(i).on_render(2.5f, 0.f, 0.f, shader);

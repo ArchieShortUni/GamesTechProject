@@ -98,7 +98,7 @@ private:
 
 
 	//Movement
-	float movement_speed = 2.5f;
+	float movement_speed = 3.5f;
 	bool sprinting = false;
 	float sprint_speed = 1.f;
 
@@ -128,6 +128,8 @@ private:
 
 	std::vector<engine::ref<engine::game_object>>& m_game_objects;
 
+	engine::SpotLight					m_spotLight;
+	uint32_t							num_spot_lights = 1;
 	
 	engine::game_object_properties bl_props{};
 	std::vector<engine::ref<projectile>> active_projectiles{};
