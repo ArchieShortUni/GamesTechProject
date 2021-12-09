@@ -18,6 +18,7 @@ enemy_ranged::enemy_ranged(glm::vec3 pos, float h, engine::ref<player> targ, boo
 	enemy_props.position = pos;
 	enemy_props.bounding_shape = glm::vec3(1.2f * e_scale, .4f * e_scale, 1.2f * e_scale);
 	enemy_props.type = 0;
+	enemy_props.mass = 5;
 
 	
 	enemy_props.scale = glm::vec3(e_scale);

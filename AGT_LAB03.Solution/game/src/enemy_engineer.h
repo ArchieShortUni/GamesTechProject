@@ -101,7 +101,7 @@ private:
 	bool attempting_to_unstick;
 	glm::vec3 stuck_point;
 
-	float movement_speed = 2.5f;
+	float movement_speed = 2.f;
 
 	glm::vec3 patrol_point = glm::vec3(0.f, 0.f, 0.f);
 	glm::vec3 temp_point;

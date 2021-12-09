@@ -11,6 +11,7 @@ enemy_engineer::enemy_engineer(glm::vec3 pos, float h, engine::ref<player> targ,
 	enemy_props.position = pos;
 	enemy_props.bounding_shape = glm::vec3(.4f * e_scale, .4f * e_scale, .4f * e_scale);
 	enemy_props.type = 0;
+	enemy_props.mass = 5;
 
 
 	enemy_props.scale = glm::vec3(e_scale);

@@ -68,7 +68,7 @@ void ai_manager::on_update(const engine::timestep& time_step) {
 		if (!hit) {
 			for (int t = 0; t < active_engineer_enemies.size(); t++) {
 				if ((player_projectiles.at(i)->get_hitbox().collision(active_engineer_enemies.at(t)->get_hit_box())) && !hit) {
-					active_engineer_enemies.at(t)->take_damage(50);
+					active_engineer_enemies.at(t)->take_damage(35);
 					hit = true;
 				}
 			}

@@ -1,10 +1,11 @@
 #include "pch.h"
 #include "beacon.h"
+#include <random>
 
 
 beacon::beacon(glm::vec3 colour,glm::vec3 position, int switch_num, float switch_radius, int switches_to_activate, float b_speed, int light_number) {
 	beacon_position = position;
-	beacon_position.y += 1.f;
+	beacon_position.y += 4.f;
 	sw_to_activate = switches_to_activate;
 	beam_speed = b_speed;
 	light_int = light_number;
@@ -17,7 +18,7 @@ beacon::beacon(glm::vec3 colour,glm::vec3 position, int switch_num, float switch
 	float b_scale = 3.f / glm::max(b_model->size().x, glm::max(b_model->size().y, b_model->size().z));
 	b_scale *=scale_factor;
 	b_props.position = beacon_position;
-	b_props.bounding_shape = glm::vec3(.6f, .04f, .6f);
+	b_props.bounding_shape = glm::vec3(.6f, 1.1f, .6f);
 	b_props.rotation_amount = AI_DEG_TO_RAD(270);
 	b_props.scale = glm::vec3(b_scale);
 	b_props.mass = 100.f;
@@ -54,7 +55,13 @@ beacon::~beacon() {}
 
 
 void beacon::new_switches_pos(float radius,float min_range) {
+	std::random_device rd;     // only used once to initialise (seed) engine
+	std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
 	for (int i = 0; i < switches.size(); i++) {
+		std::uniform_int_distribution<int> uni2((int)radius * min_range, radius); // guaranteed unbiased
+		int rangeDistance = uni2(rng);
+
+
 		bool correct_range = false;
 		float x = (((float)rand()) / RAND_MAX - .5f);
 		float z = (((float)rand()) / RAND_MAX - .5f);
@@ -73,11 +80,11 @@ void beacon::new_switches_pos(float radius,float min_range) {
 			else { z_range_correct = true; }
 
 		}
-		x *= radius;
-		z *= radius; 
+		x *= (rangeDistance*2.f);
+		z *= rangeDistance*2.f;
 
 		
-		switches.at(i)->set_position(glm::vec3(m_beacon->position().x+x, m_beacon->position().y+3.f, m_beacon->position().z+z));
+		switches.at(i)->set_position(glm::vec3(m_beacon->position().x + x, 1.5f , m_beacon->position().z + z));
 		//switches.at(i)->set_position(glm::vec3(m_beacon->position().x , m_beacon->position().y, m_beacon->position().z ));
 
 	}
@@ -108,7 +115,9 @@ void beacon::on_render(engine::ref<engine::shader> shader) {
 		set_uniform("lighting_on", false);
 
 	glm::mat4 transform(1.0f);
-	transform = glm::translate(transform, beacon_position);
+	glm::vec3 pos = beacon_position;
+	pos.y -= 3.3f;
+	transform = glm::translate(transform, pos);
 	transform = glm::scale(transform, glm::vec3(1.f, current_beacon_height, 1.f));
 	transform = glm::rotate(transform, beam_rotation, glm::vec3(0.f, 1.f, 0.f));
 	engine::renderer::submit(shader, m_cube->mesh(), transform);
@@ -138,7 +147,7 @@ void beacon::on_update(const engine::timestep& time_step) {
 	}
 	else {
 		if (!(current_beacon_height <= min_beacon_height)) {
-			current_beacon_height -= (float)time_step * (beam_speed/2);
+			current_beacon_height -= (float)time_step * (beam_speed/4);
 		}
 		else { current_beacon_height = min_beacon_height; }
 

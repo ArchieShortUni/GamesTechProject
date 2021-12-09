@@ -18,7 +18,7 @@ void player::initialise(float width, float height) {
 	player_props.rotation_axis = glm::vec3(0.f, 1.f, 0.f);
 	player_props.type = 0;
 	player_props.bounding_shape = glm::vec3(.2f, 1.f, .2f);
-	player_props.mass = .0001f;
+	player_props.mass = 100.f;
 	player_object = engine::game_object::create(player_props);
 	player_object->set_angular_factor_lock(true);
 
@@ -256,7 +256,7 @@ void player::on_update(const engine::timestep& time_step){
 			p.y -= .1f;
 
 			m_audio_manager->play_spatialised_sound("gun_shot", player_camera.position(), p);
-			m_audio_manager->volume("gun_shot", 0.002f);
+			m_audio_manager->volume("gun_shot", 0.000002f);
 
 			engine::ref<projectile> bullet = projectile::create(bl_props, 0);
 			active_projectiles.push_back(bullet);

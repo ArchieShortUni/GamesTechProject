@@ -25,12 +25,17 @@ game_manager::game_manager(engine::perspective_camera& camera, float width, floa
 void game_manager::initialise() {
 	//Hard code beacon data
 	glm::vec3 beacon1_pos = glm::vec3(3.f, .5f, 10.f);
-	glm::vec3 beacon2_pos = glm::vec3(14.f, .5f, -7.f);
-	glm::vec3 beacon3_pos = glm::vec3(-10.f, .5f, 5.f);
+	glm::vec3 beacon2_pos = glm::vec3(14.f, .5f, -20.f);
+	glm::vec3 beacon3_pos = glm::vec3(-10.f, .5f, 30.f);
 
-	engine::ref<beacon> m_beacon1 = beacon::create(bcolour1, beacon1_pos, 3, 25.0f, 3, 2.f,0);
-	engine::ref<beacon> m_beacon2 = beacon::create(bcolour2, beacon2_pos, 3, 25.0f, 3, 1.5f,1);
-	engine::ref<beacon> m_beacon3 = beacon::create(bcolour3, beacon3_pos, 3, 25.0f, 3, 1.f,2);
+	spawn_origins.push_back(glm::vec3(0.f, .5f, 0.f));
+	spawn_origins.push_back(beacon1_pos);
+	spawn_origins.push_back(beacon2_pos);
+	spawn_origins.push_back(beacon3_pos);
+
+	engine::ref<beacon> m_beacon1 = beacon::create(bcolour1, beacon1_pos, 6, 25.0f, 4, 2.f,0);
+	engine::ref<beacon> m_beacon2 = beacon::create(bcolour2, beacon2_pos, 6, 25.0f, 4, 1.5f,1);
+	engine::ref<beacon> m_beacon3 = beacon::create(bcolour3, beacon3_pos, 6, 25.0f, 4, 1.f,2);
 
 	m_game_objects.push_back(m_beacon1->get_object());
 	m_game_objects.push_back(m_beacon2->get_object());
@@ -70,7 +75,10 @@ void game_manager::initialise() {
 void game_manager::on_update(const engine::timestep& time_step) {
 		if (player->is_alive() && !level_complete) {
 
+
+
 			level_time -= 1 * time_step;
+
 			player->on_update(time_step);
 			player->update_camera();
 			m_ai_manager->on_update(time_step);
@@ -182,6 +190,10 @@ void game_manager::on_update(const engine::timestep& time_step) {
 			if (current_level_percent == 100) {
 				level_complete = true; 
 			}
+			if (level_time < check) {
+				spawnEntities();
+				check -= spawn_interval;
+			}
 		}
 
 	
@@ -262,7 +274,103 @@ void game_manager::on_render3d(engine::ref<engine::shader> shader) {
 	m_ai_manager->on_render(shader);
 }
 
+void game_manager::spawnEntities() {
+	//Spawns enemies in difficulty brackets depending on how far through the level the player is dynamically 
+	if (current_level_percent > 0 && current_level_percent < 20) {
+		if ((rand() % 2) != 0) {
+			m_ai_manager->add_enemy(game_enums::enemies::melee, getRandomPos(30.f, 0.2f));
+		}
+		if ((rand() % 2) != 0) {
+			m_ai_manager->add_enemy(game_enums::enemies::ranged, getRandomPos(30.f, 0.2f));
+		}
+	
+
+	}
+	else if (current_level_percent > 20 && current_level_percent < 40) {
+		if ((rand() % 2) != 0) {
+			m_ai_manager->add_enemy(game_enums::enemies::melee, getRandomPos(30.f, 0.2f));
+		}
+		if ((rand() % 2) != 0) {
+			m_ai_manager->add_enemy(game_enums::enemies::ranged, getRandomPos(30.f, 0.2f));
+		}
+		if ((rand() % 3) != 0) {m_ai_manager->add_enemy(game_enums::enemies::engineer, getRandomPos(30.f, 0.2f));}
+
+
+	}
+	else if (current_level_percent > 40 && current_level_percent < 60) {
+		if ((rand() % 2) != 0) {
+			m_ai_manager->add_enemy(game_enums::enemies::melee, getRandomPos(30.f, 0.2f));
+		}
+		if ((rand() % 2) != 0) {
+			m_ai_manager->add_enemy(game_enums::enemies::ranged, getRandomPos(30.f, 0.2f));
+		}
+	
+		if ((rand() % 2) != 0) {
+			m_ai_manager->add_enemy(game_enums::enemies::rangedShotgun, getRandomPos(30.f, 0.2f));
+		}
+
+		if ((rand() % 3) != 0) {m_ai_manager->add_enemy(game_enums::enemies::engineer, getRandomPos(30.f, 0.2f));}
+
+	}
+	else if (current_level_percent > 60 && current_level_percent < 80) {
+		if ((rand() % 2) != 0) {
+			m_ai_manager->add_enemy(game_enums::enemies::melee, getRandomPos(30.f, 0.2f));
+		}
+		if ((rand() % 2) != 0) {
+			m_ai_manager->add_enemy(game_enums::enemies::rangedShotgun, getRandomPos(30.f, 0.2f));
+		}
+		if ((rand() % 2) != 0) {
+			m_ai_manager->add_enemy(game_enums::enemies::rangedShotgun, getRandomPos(30.f, 0.2f));
+		}
+
+		if ((rand() % 3) != 0) { m_ai_manager->add_enemy(game_enums::enemies::engineer, getRandomPos(30.f, 0.2f)); }
+		
+
+	}
+
+	else if (current_level_percent > 80 && current_level_percent < 100) {
+		if ((rand() % 2) != 0) {
+			m_ai_manager->add_enemy(game_enums::enemies::melee, getRandomPos(30.f, 0.2f));
+		}
+		if ((rand() % 2) != 0) {
+			m_ai_manager->add_enemy(game_enums::enemies::rangedShotgun, getRandomPos(30.f, 0.2f));
+		}
+		if ((rand() % 2) != 0) {
+			m_ai_manager->add_enemy(game_enums::enemies::rangedShotgun, getRandomPos(30.f, 0.2f));
+		}
+
+			if ((rand() % 2) != 0) { m_ai_manager->add_enemy(game_enums::enemies::engineer, getRandomPos(30.f, 0.2f)); }
+		
+
+	}
+
+	if ((rand() % 4 + 1) == 1) {
+		glm::vec3 pickup_pos = getRandomPos(30.f, 0.2f);
+		pickup_pos.y = 1.1f;
+		engine::ref<pickup> p = pickup::create(pickup_pos, level_beacons, player, m_audio_manager);
+		level_pickups.push_back(p);
+	}
+}
+
+glm::vec3 game_manager::getRandomPos(float radius, float min_range) {
+	std::random_device rd;     // only used once to initialise (seed) engine
+	std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
+	std::uniform_int_distribution<int> uni(0, level_switches.size() - 1); // guaranteed unbiased
+
+	int originInt = uni(rng);
+
+	glm::vec3 origin = level_switches.at(originInt)->get_position();
+	float x = (((float)rand()) / RAND_MAX - .5f);
+	float z = (((float)rand()) / RAND_MAX - .5f);
+
+	x *= 10.f;
+	z *= 10.f;
+	return glm::vec3(x + origin.x, origin.y, origin.z + z);
+}
+
+
 engine::ref<game_manager> game_manager::create(engine::perspective_camera& camera, float width, float height,engine::ref<engine::audio_manager>& audio)
 {
 	return std::make_shared<game_manager>(camera,width,height,audio);
 }
+

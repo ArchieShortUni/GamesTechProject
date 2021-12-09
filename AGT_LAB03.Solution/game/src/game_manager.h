@@ -35,6 +35,10 @@ public:
 
 	void add_to_game_objects(engine::ref < engine::game_object> obj) { m_game_objects.push_back(obj); }
 
+	void spawnEntities();
+
+	glm::vec3 getRandomPos(float radius, float min_range);
+
 private:
 
 
@@ -63,9 +67,9 @@ private:
 	engine::ref<engine::text_manager>	m_text_manager{};
 
 	std::vector<engine::ref<pickup>> level_pickups;
-	 
 	std::vector<engine::ref<beacon>> level_beacons;
 	std::vector<engine::ref<beacon_switch>>  level_switches;
+	std::vector<glm::vec3> spawn_origins;
 	engine::ref<engine::texture_2d> m_texture;
 	engine::ref<quad> m_quad;
 
@@ -76,6 +80,8 @@ private:
 	
 
 	float level_time = 182;
+	float check = 181;
+	float spawn_interval = 5;
 	//TESTING TO BE DELETED LATER
 
 	engine::ref<enemy_ranged> enemy; 

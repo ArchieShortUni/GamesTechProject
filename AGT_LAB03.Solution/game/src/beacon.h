@@ -49,8 +49,8 @@ public:
 
 		switch_obj->set_angular_factor_lock(true);
 
-		m_switch_material = engine::material::create(1.0f, colour,
-			colour, glm::vec3(0.5f, 0.5f, 0.5f), 1.0f);
+		m_switch_material = engine::material::create(1.0f, glm::vec3(0.0f, 0.f, .0f),
+			glm::vec3(0.0f, 0.f, .0f), glm::vec3(0.5f, 0.5f, 0.5f), 1.0f);
 	}
 
 	~beacon_switch() {}
@@ -81,8 +81,10 @@ public:
 	glm::vec3 get_position() { return switch_obj->position(); }
 
 	void swap_state() {
-		if (is_on) { is_on = false; m_switch_material->set_ambient(glm::vec3(1.0f, 0.64706f, .0f)); }
-		else { is_on = true; m_switch_material->set_ambient(glm::vec3(base_colour));
+		if (is_on) { is_on = false; m_switch_material->set_ambient(glm::vec3(0.0f, 0.f, .0f)); m_switch_material->set_diffuse(glm::vec3(0.0f, 0.f, .0f));
+		}
+		else {
+			is_on = true; m_switch_material->set_ambient(glm::vec3(base_colour));  m_switch_material->set_diffuse(glm::vec3(base_colour));
 		}
 	}
 	bool get_state() { return is_on; }
@@ -91,7 +93,7 @@ public:
 
 	engine::ref<engine::game_object>& get_switch_object() { return switch_obj; }
 private:
-	bool is_on = true;
+	bool is_on = false;
 	glm::vec3 position;
 	glm::vec3 base_colour;
 	engine::game_object_properties sw_props{};
