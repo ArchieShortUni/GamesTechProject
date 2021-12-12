@@ -30,11 +30,14 @@ public:
 
 private:
 	engine::ref<engine::audio_manager>& m_audio_manager;
+	//Switches to pass through for the engineers to use
 	std::vector<engine::ref<beacon_switch>> level_switches;
+	//All enemies in the level to be updated and rendered 
 	std::vector<engine::ref<turret>> active_turrets{};
 	std::vector<engine::ref<enemy_ranged>> active_ranged_enemies{};
 	std::vector<engine::ref<enemy_melee>> active_melee_enemies{}; 
 	std::vector<engine::ref<enemy_engineer>> active_engineer_enemies{};
+	//To add gameobjects to 
 	std::vector<engine::ref<engine::game_object>>& m_game_objects;
 	engine::ref<player>& target;
 

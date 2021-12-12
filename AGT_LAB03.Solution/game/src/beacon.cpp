@@ -21,7 +21,7 @@ beacon::beacon(glm::vec3 colour,glm::vec3 position, int switch_num, float switch
 	b_props.bounding_shape = glm::vec3(.6f, 1.1f, .6f);
 	b_props.rotation_amount = AI_DEG_TO_RAD(270);
 	b_props.scale = glm::vec3(b_scale);
-	b_props.mass = 100.f;
+	b_props.mass = 1000000.f;
 
 
 	beacon_box.set_box(b_props.bounding_shape.x,

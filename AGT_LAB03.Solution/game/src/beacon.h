@@ -32,7 +32,6 @@ public:
 
 		engine::ref<engine::tricube> tricube_shape = engine::tricube::create(tricube_vertices);
 
-		//engine::ref<engine::cuboid> sw_cube = engine::cuboid::create(glm::vec3(.4f, .4f, .4f), false);
 		sw_props.meshes = { tricube_shape->mesh() };
 		sw_props.scale /= 15;
 		sw_props.position = glm::vec3(0.f, 1.f, 0.f);
@@ -48,7 +47,7 @@ public:
 		switch_obj = engine::game_object::create(sw_props);
 
 		switch_obj->set_angular_factor_lock(true);
-
+		//Creates black starting material
 		m_switch_material = engine::material::create(1.0f, glm::vec3(0.0f, 0.f, .0f),
 			glm::vec3(0.0f, 0.f, .0f), glm::vec3(0.5f, 0.5f, 0.5f), 1.0f);
 	}
@@ -81,6 +80,7 @@ public:
 	glm::vec3 get_position() { return switch_obj->position(); }
 
 	void swap_state() {
+		//Swaps material to black or whatever the full colour should be depending on if the switch on is true or false 
 		if (is_on) { is_on = false; m_switch_material->set_ambient(glm::vec3(0.0f, 0.f, .0f)); m_switch_material->set_diffuse(glm::vec3(0.0f, 0.f, .0f));
 		}
 		else {
@@ -138,6 +138,7 @@ private:
 	float scale_factor = 3.f;
 
 	int sw_to_activate;
+	//How quickly the beam percentage increases 
 	float beam_speed = 0;
 	float max_beacon_height = 170.f;
 	float min_beacon_height = 9.f;

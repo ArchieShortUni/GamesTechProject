@@ -5,7 +5,8 @@ ai_manager::ai_manager(std::vector<engine::ref<engine::game_object>>& game_objec
 	m_explosion = explosion::create("assets/textures/Explosion.tga", 12, 1, 12);
 }
 
-
+//Adding enemy to the game objects and their respective vector to update and render
+//Using enums for the enemy types
 void ai_manager::add_enemy(game_enums::enemies enemyType, glm::vec3 pos) {
 		if (enemyType == game_enums::enemies::ranged) {
 		engine::ref<enemy_ranged> en = enemy_ranged::create(pos, 100, target,false);
@@ -29,7 +30,7 @@ void ai_manager::add_enemy(game_enums::enemies enemyType, glm::vec3 pos) {
 		}
 }
 
-
+//Cycling through all of the enemies to call their render function 
 void ai_manager::on_render(engine::ref<engine::shader> shader) {
 	m_explosion->on_render(target->get_camera(),shader);
 	//Ranged enemies
@@ -53,6 +54,9 @@ void ai_manager::on_render(engine::ref<engine::shader> shader) {
 void ai_manager::on_update(const engine::timestep& time_step) {
 	m_explosion->on_update(time_step);
 
+	//Cycles through all of the players active projectiles
+	//Compares the hitbox of each one to the hitboxes of all the enemies in the game
+	//If it collides it skips the rest of the collision checks 
 	std::vector<engine::ref<projectile>>& player_projectiles = target->get_active_projectiles();
 	for (int i = 0; i < player_projectiles.size(); i++) {
 		//Turret Collision
@@ -96,7 +100,8 @@ void ai_manager::on_update(const engine::timestep& time_step) {
 		}
 	}
 
-
+	//updates the enemies and checks if they have 0 health
+	//If they have no health remove them from the gameobject list / the physics manager and also the active enemies vector
 	for (int i = 0; i < active_ranged_enemies.size(); i++) {
 		active_ranged_enemies.at(i)->on_update(time_step);
 		if (active_ranged_enemies.at(i)->get_health() == 0) {

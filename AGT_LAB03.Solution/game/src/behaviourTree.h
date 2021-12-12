@@ -83,6 +83,8 @@ public:
 	bool run() const { return root->run(); }
 };
 
+//All code above this point is from the online blog referenced in my report
+
 class Action : public BehaviourTree::Node {
 private:
 	game_enums::state state;
