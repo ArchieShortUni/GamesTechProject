@@ -248,6 +248,7 @@ void game_manager::on_render2d(engine::ref<engine::shader> shader) {
 	
 }
 void game_manager::on_render3d(engine::ref<engine::shader> shader) {
+	player->on_render(shader);
 
 	for (int i = 0; i < level_beacons.size(); i++) {
 		level_beacons.at(i)->on_render(shader); 
@@ -258,7 +259,6 @@ void game_manager::on_render3d(engine::ref<engine::shader> shader) {
 		active_turrets.at(i)->on_render(shader);
 	}
 	
-	player->on_render(shader);
 	m_explosion->on_render(cam, shader);
 
 

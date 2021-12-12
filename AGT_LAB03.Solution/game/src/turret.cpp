@@ -61,13 +61,10 @@ turret::turret(glm::vec3 pos, float , engine::ref<player> targ):target(targ) {
 		glm::vec3(.10f, 1.f, 0.07f), glm::vec3(0.5f, 0.5f, 0.5f), 1.0f);
 
 
-	std::vector<engine::ref<engine::texture_2d>> base_textures =
-	{ engine::texture_2d::create("assets/textures/metal.bmp ", false) };
 
 	engine::ref<engine::cuboid> base_cube = engine::cuboid::create(glm::vec3(.25f, .3f, .25f), false, false);
 	engine::game_object_properties base_props;
 	base_props.meshes = { base_cube->mesh() };
-	base_props.textures = base_textures; 
 	base_props.rotation_amount = AI_DEG_TO_RAD(270);
 	base_props.scale = glm::vec3(1.f);
 	base_props.position = glm::vec3(pos.x,pos.y-.2f,pos.z);

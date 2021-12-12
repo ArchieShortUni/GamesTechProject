@@ -39,26 +39,26 @@ engine::tricube::tricube(std::vector<glm::vec3> vertices) : m_vertices(vertices)
 		//N
 		{vertices.at(1),	normals.at(0),	{0.f,0.f}},	//0
 		{vertices.at(0),	normals.at(0),	{1.f,0.f}},	//1
-		{vertices.at(4),	normals.at(0),	{1.f,1.f}},	//2
-		{vertices.at(5),	normals.at(0),	{0.f,1.f}},	//3
+		{vertices.at(4),	normals.at(0),	{1.f,.15f}},	//2
+		{vertices.at(5),	normals.at(0),	{0.f,.15f}},	//3
 
 		//E
 		{vertices.at(2),	normals.at(2),	{0.f,0.f}}, //4
 		{vertices.at(1),	normals.at(2),	{1.f,0.f}}, //5
-		{vertices.at(5),	normals.at(2),	{1.f,1.f}}, //6
-		{vertices.at(6),	normals.at(2),	{0.f,1.f}}, //7
+		{vertices.at(5),	normals.at(2),	{1.f,.15f}}, //6
+		{vertices.at(6),	normals.at(2),	{0.f,.15f}}, //7
 
 		//S
 		{vertices.at(3),	normals.at(4),	{0.f,0.f}}, //8A
 		{vertices.at(2),	normals.at(4),	{1.f,0.f}}, //9 
-		{vertices.at(6),	normals.at(4),	{1.f,1.f}}, //10
-		{vertices.at(7),	normals.at(4),	{0.f,1.f}}, //11
+		{vertices.at(6),	normals.at(4),	{1.f,.15f}}, //10
+		{vertices.at(7),	normals.at(4),	{0.f,.15f}}, //11
 
 		//W
 		{vertices.at(0),	normals.at(6),	{0.f,0.f}}, //12
 		{vertices.at(3),	normals.at(6),	{1.f,0.f}}, //13
-		{vertices.at(7),	normals.at(6),	{1.f,1.f}}, //14
-		{vertices.at(4),	normals.at(6),	{0.f,1.f}}, //15
+		{vertices.at(7),	normals.at(6),	{1.f,.15f}}, //14
+		{vertices.at(4),	normals.at(6),	{0.f,.15f}}, //15
 
 		//NT
 		{vertices.at(5),	normals.at(1),	{0.f,0.f}}, //16
@@ -88,32 +88,32 @@ engine::tricube::tricube(std::vector<glm::vec3> vertices) : m_vertices(vertices)
 
 		//BN
 		{vertices.at(14),	normals.at(9),	{0.f,0.f}}, //32
-		{vertices.at(13),	normals.at(9),	{1.f,0.f}}, //33
-		{vertices.at(9),	normals.at(9),	{1.f,1.f}}, //34
+		{vertices.at(13),	normals.at(9),	{.2f,0.f}}, //33
+		{vertices.at(9),	normals.at(9),	{.2f,1.f}}, //34
 		{vertices.at(10),	normals.at(9),	{0.f,1.f}}, //35
 
 		//BE
 		{vertices.at(15),	normals.at(12),	{0.f,0.f}}, //36
-		{vertices.at(14),	normals.at(12),	{1.f,0.f}}, //37
-		{vertices.at(10),	normals.at(12),	{1.f,1.f}}, //38
+		{vertices.at(14),	normals.at(12),	{.2f,0.f}}, //37
+		{vertices.at(10),	normals.at(12),	{.2f,1.f}}, //38
 		{vertices.at(11),	normals.at(12),	{0.f,1.f}}, //39
 
 		//BS
 		{vertices.at(16),	normals.at(11),	{0.f,0.f}}, //40
-		{vertices.at(15),	normals.at(11),	{1.f,0.f}}, //41
-		{vertices.at(11),	normals.at(11),	{1.f,1.f}}, //42
+		{vertices.at(15),	normals.at(11),	{.2f,0.f}}, //41
+		{vertices.at(11),	normals.at(11),	{.2f,1.f}}, //42
 		{vertices.at(12),	normals.at(11),	{0.f,1.f}}, //43
 
 		//BW
 		{vertices.at(13),	normals.at(12),	{0.f,0.f}}, //44
-		{vertices.at(16),	normals.at(12),	{1.f,0.f}}, //45
-		{vertices.at(12),	normals.at(12),	{1.f,1.f}}, //46
+		{vertices.at(16),	normals.at(12),	{.2f,0.f}}, //45
+		{vertices.at(12),	normals.at(12),	{.2f,1.f}}, //46
 		{vertices.at(9),	normals.at(12),	{0.f,1.f}}, //47
 
 		//BB
 		{vertices.at(16),	normals.at(11),	{0.f,0.f}}, //48
-		{vertices.at(13),	normals.at(11),	{1.f,0.f}}, //49
-		{vertices.at(14),	normals.at(11),	{1.f,1.f}}, //50
+		{vertices.at(13),	normals.at(11),	{.2f,0.f}}, //49
+		{vertices.at(14),	normals.at(11),	{.2f,1.f}}, //50
 		{vertices.at(15),	normals.at(11),	{0.f,1.f}}, //51
 
 	};

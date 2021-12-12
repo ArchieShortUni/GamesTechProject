@@ -84,6 +84,7 @@ private:
 	engine::ref<engine::audio_manager>&  m_audio_manager;
 
 	glm::vec3 player_pos;
+	glm::vec3 last_pos = glm::vec3(0.f,0.f,0.f);
 	engine::bounding_box player_hitbox;
 	engine::bounding_box interaction_hitbox; 
 	engine::perspective_camera& player_camera;
@@ -91,7 +92,7 @@ private:
 	bool interaction_box_active = false; 
 
 	bool alive = true;
-	float health = 100;
+	float health = 10000000;
 	float speed;
 
 	engine::ref<engine::game_object>	m_claw{};

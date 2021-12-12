@@ -31,13 +31,14 @@ public:
 		tricube_vertices.push_back(glm::vec3(-1.f, 0.f, -1.f)); //16
 
 		engine::ref<engine::tricube> tricube_shape = engine::tricube::create(tricube_vertices);
+	
 
 		sw_props.meshes = { tricube_shape->mesh() };
 		sw_props.scale /= 15;
 		sw_props.position = glm::vec3(0.f, 1.f, 0.f);
 		sw_props.bounding_shape = glm::vec3(1.f,1.2f, 1.f);
 		sw_props.type = 0;
-		sw_props.mass = 100000;
+		sw_props.mass = 10000;
 
 		switch_box.set_box(sw_props.bounding_shape.x,
 			sw_props.bounding_shape.y,
