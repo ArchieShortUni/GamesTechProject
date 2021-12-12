@@ -14,7 +14,7 @@ void projectile::fire(glm::vec3 origin, glm::vec3 direction, float speed) {
 	m_projectile->set_forward(glm::normalize(direction));
 }
 void projectile::on_render(const engine::ref<engine::shader>& shader) {
-	projectile_hitbox.on_render(2.5f, 0.f, 0.f,shader);
+	//projectile_hitbox.on_render(2.5f, 0.f, 0.f,shader);
 	glm::mat4 proj_transform(1.f);
 	proj_transform = glm::translate(proj_transform, m_projectile->position());
 	proj_transform = glm::scale(proj_transform, m_projectile->scale());

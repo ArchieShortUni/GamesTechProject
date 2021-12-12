@@ -49,7 +49,7 @@ enemy_ranged::enemy_ranged(glm::vec3 pos, float h, engine::ref<player> targ, boo
 
 void enemy_ranged::on_render(engine::ref<engine::shader> shader) {
 	if (m_state != game_enums::state::attemptingUnstick) {
-		hitbox.on_render(2.5f, .0f, .0f, shader);
+		//hitbox.on_render(2.5f, .0f, .0f, shader);
 	}
 	glm::mat4 enemy_transform(1.f);
 

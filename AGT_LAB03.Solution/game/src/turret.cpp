@@ -89,7 +89,7 @@ turret::turret(glm::vec3 pos, float , engine::ref<player> targ):target(targ) {
 }
 
 void turret::on_render(engine::ref<engine::shader> shader) {
-	base_hitbox.on_render(2.5f, 0.f, 0.f, shader);
+	//base_hitbox.on_render(2.5f, 0.f, 0.f, shader);
 	for (int i = 0; i < active_projectiles.size(); i++) {
 		active_projectiles.at(i)->on_render(shader);
 	}

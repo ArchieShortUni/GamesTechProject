@@ -92,7 +92,7 @@ private:
 	bool interaction_box_active = false; 
 
 	bool alive = true;
-	float health = 10000000;
+	float health = 100;
 	float speed;
 
 	engine::ref<engine::game_object>	m_claw{};

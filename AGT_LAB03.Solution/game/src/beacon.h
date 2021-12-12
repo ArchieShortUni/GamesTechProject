@@ -67,7 +67,7 @@ public:
 		switch_transform = glm::scale(switch_transform, switch_obj->scale());
 		engine::renderer::submit(shader, switch_transform, switch_obj);
 
-		switch_box.on_render(2.5f, 0.f, 0.f, shader);
+		//switch_box.on_render(2.5f, 0.f, 0.f, shader);
 	}
 
 	void on_update() {

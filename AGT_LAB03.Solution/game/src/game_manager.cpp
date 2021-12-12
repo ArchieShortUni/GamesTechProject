@@ -10,9 +10,9 @@ game_manager::game_manager(engine::perspective_camera& camera, float width, floa
 
 	level_bar = progress_bar::create(.03f,.8f, glm::vec2(.0f, 0.8f),  10.f, "assets/textures/bar_back.bmp" , "assets/textures/bar_back.bmp", "assets/textures/menu.bmp");
 
-	beacon1_bar = progress_bar::create(.02f, .3f, glm::vec2(-1.25f, -0.4f), 10.f, "assets/textures/bar_back.bmp", "assets/textures/bar_front.bmp", "assets/textures/energy_yellow.bmp");
-	beacon2_bar = progress_bar::create(.02f, .3f, glm::vec2(-1.25f, -0.5f), 10.f, "assets/textures/bar_back.bmp", "assets/textures/bar_front.bmp", "assets/textures/energy_yellow.bmp");
-	beacon3_bar = progress_bar::create(.02f, .3f, glm::vec2(-1.25f, -0.62f), 10.f, "assets/textures/bar_back.bmp", "assets/textures/bar_front.bmp", "assets/textures/energy_yellow.bmp");
+	beacon1_bar = progress_bar::create(.02f, .3f, glm::vec2(-1.25f, -0.4f), 10.f, "assets/textures/bar_back.bmp", "assets/textures/bar_back.bmp", "assets/textures/red.bmp");
+	beacon2_bar = progress_bar::create(.02f, .3f, glm::vec2(-1.25f, -0.5f), 10.f, "assets/textures/bar_back.bmp", "assets/textures/bar_back.bmp", "assets/textures/green.bmp");
+	beacon3_bar = progress_bar::create(.02f, .3f, glm::vec2(-1.25f, -0.62f), 10.f, "assets/textures/bar_back.bmp", "assets/textures/bar_back.bmp", "assets/textures/blue.bmp");
 
 	health_bar = progress_bar::create(.02f, .6f, glm::vec2(-.0f, 0.7f), 10.f, "assets/textures/bar_back.bmp", "assets/textures/bar_back.bmp", "assets/textures/health_bar.bmp");
 
